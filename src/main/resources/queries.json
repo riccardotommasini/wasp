@@ -1,0 +1,17 @@
+[
+  {
+    "@context": {
+      "vsd": "http://w3id.org/rsp/vocals-sd#"
+    },
+    "@id": "http://localhost:8182/csparql",
+    "@type":"vsd:ProcessingService",
+    "vsd:lang":"vsd:CSPARQL",
+    "vsd:schema": "?s ?p ?o",
+    "vsd:hasService": {"@id":"queryservice",
+      "vsd:method":"POST",
+      "vsd:endpoint":"http://localhost:8182/csparql/query",
+      "vsd:uri_param":"id",
+      "vsd:body":"query_body"
+    }
+  }
+]

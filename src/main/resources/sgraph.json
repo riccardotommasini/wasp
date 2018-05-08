@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "vsd": "http://w3id.org/rsp/vocals-sd#"
+  },
+  "@id": "http://localhost:8182/csparql",
+  "@type":"vsd:ProcessingService",
+  "vsd:lang":"vsd:CSPARQL",
+  "vsd:hasService": [{"@id":"Stream Registration Service",
+                     "vsd:method":"POST",
+                     "vsd:endpoint":"http://localhost:8182/csparql/streams",
+                     "vsd:uri_param":"id",
+                     "vsd:body_param": "source"
+                    },
+                    {"@id":"Stream Service",
+                      "vsd:method": "GET",
+                      "vsd:endpoint": "http://localhost:8182/csparql/streams/{id}",
+                      "vsd:uri_param": "id"
+                    },
+                    {"@id":"Graph Registration Service",
+                     "vsd:method":"POST",
+                     "vsd:endpoint":"http://localhost:8182/csparql/graphs/{name}",
+                     "vsd:uri_param":"name",
+                     "vsd:body":"location"
+                    },
+                    {"@id":"Query Registration Service",
+                     "vsd:method":"POST",
+                     "vsd:endpoint":"http://localhost:8182/csparql/queries/{id}",
+                     "vsd:uri_param":"id",
+                     "vsd:body":"query_body"
+                    }]
+}
