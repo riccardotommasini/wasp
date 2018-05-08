@@ -1,0 +1,56 @@
+{
+  "@context": {
+    "@base": "http://example.org/",
+    "vocals": "http://w3id.org/rsp/vocals#",
+    "vsd": "http://w3id.org/rsp/vocals-sd#",
+    "vprov": "http://w3id.org/rsp/vocals-prov#",
+    "dcat": "http://www.w3.org/ns/dcat",
+    "frmt": "http://www.w3.org/ns/formats/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "vsd:name": {  "@type": "xsd:string"}
+  },
+  "@id": "csparql",
+  "vsd:name": "csparql",
+  "@type": "vsd:ProcessingService",
+  "vsd:lang": "vsd:CSPARQL",
+  "vsd:base": "http://localhost:8182/",
+  "vsd:hasService": [
+    {
+      "vsd:name": "Stream_Registration_Service",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/streams",
+      "vsd:body_param": "source"
+    },
+    {
+      "vsd:name": "Stream_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/streams/:id",
+      "vsd:body_param": "id"
+    },
+    {
+      "vsd:name": "Streams_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/streams",
+      "vsd:body_param": "id"
+    },
+    {
+      "vsd:name": "Query_Registration_Service",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/queries/:id",
+      "vsd:uri_param": "id",
+      "vsd:body": "query_body"
+    },
+    {
+      "vsd:name": "Queries_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/queries"
+    },
+    {
+      "vsd:name": "Query_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/queries/:id",
+      "vsd:uri_param": "id",
+      "vsd:body": "query_body"
+    }
+  ]
+}

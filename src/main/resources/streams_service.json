@@ -1,0 +1,40 @@
+[
+  {
+    "@context": {
+      "@base": "http://example.org/",
+      "vocals": "http://w3id.org/rsp/vocals#",
+      "vsd": "http://w3id.org/rsp/vocals-sd#",
+      "vprov": "http://w3id.org/rsp/vocals-prov#",
+      "dcat": "http://www.w3.org/ns/dcat",
+      "frmt": "http://www.w3.org/ns/formats/",
+      "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "@id": ":MilanTrafficStream",
+    "@type": "vocals:RDFStream",
+    "vocals:hasEndpoint": {
+      "@id": ":MilanTrafficStreamEndpoint",
+      "@type": "vocals:StreamEndpoint",
+      "dcat:accessURL": "ws://example.org/traffic/milan",
+      "dcat:description": {
+        "@id": "Streaming endpoint to consume Milan Traffic Stream via websocket",
+        "@type": "xsd:string"
+      },
+      "dcat:format": "frmt:JSON-LD",
+      "dcat:license": "https://creativecommons.org/licenses/by-nc/4.0/>",
+      "dcat:title": {
+        "@id": ":Milan Traffic Stream Endpoint",
+        "@type": "xsd:string"
+      }
+    },
+    "dcat:description": {
+      "@id": "Aggregated stream of different streams produced by traffic sesnors spread around Milan",
+      "@type": "xsd:string"
+    },
+    "dcat:landingPage": "https://example.org/traffic/milan/",
+    "dcat:publisher": "TrafficStreamPublisher",
+    "dcat:title": {
+      "@id": "Milan Traffic Stream",
+      "@type": "xsd:string"
+    }
+  }
+]

@@ -1,0 +1,8 @@
+PREFIX vsd: <http://w3id.org/rsp/vocals-sd#>
+
+SELECT ?param
+WHERE {
+
+    ?service vsd:body_param ?param
+
+}
