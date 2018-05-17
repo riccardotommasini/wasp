@@ -1,3 +1,4 @@
+package it.polimi.rsp.other;
 
 import com.google.common.base.Strings;
 import eu.optique.r2rml.api.binding.jena.JenaR2RMLMappingManager;

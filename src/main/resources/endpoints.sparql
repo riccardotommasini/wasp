@@ -1,6 +1,7 @@
 PREFIX vsd: <http://w3id.org/rsp/vocals-sd#>
+PREFIX vocals: <http://w3id.org/rsp/vocals#>
 
-SELECT ?name ?endpoint ?method
+SELECT ?name ?endpoint ?method ?feature
 WHERE {
 
     ?engine vsd:hasService ?service .
@@ -9,4 +10,5 @@ WHERE {
              vsd:method ?method ;
              vsd:endpoint ?endpoint .
 
+    OPTIONAL {  ?service vocals:feature ?feature . }
 }

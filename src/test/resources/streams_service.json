@@ -11,6 +11,16 @@
     },
     "@id": ":MilanTrafficStream",
     "@type": "vocals:RDFStream",
+    "dcat:description": {
+      "@id": "Aggregated stream of different streams produced by traffic sesnors spread around Milan",
+      "@type": "xsd:string"
+    },
+    "dcat:landingPage": "https://example.org/traffic/milan/",
+    "dcat:publisher": "TrafficStreamPublisher",
+    "dcat:title": {
+      "@id": "Milan Traffic Stream",
+      "@type": "xsd:string"
+    },
     "vocals:hasEndpoint": {
       "@id": ":MilanTrafficStreamEndpoint",
       "@type": "vocals:StreamEndpoint",
@@ -25,16 +35,6 @@
         "@id": ":Milan Traffic Stream Endpoint",
         "@type": "xsd:string"
       }
-    },
-    "dcat:description": {
-      "@id": "Aggregated stream of different streams produced by traffic sesnors spread around Milan",
-      "@type": "xsd:string"
-    },
-    "dcat:landingPage": "https://example.org/traffic/milan/",
-    "dcat:publisher": "TrafficStreamPublisher",
-    "dcat:title": {
-      "@id": "Milan Traffic Stream",
-      "@type": "xsd:string"
     }
   }
 ]

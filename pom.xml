@@ -4,9 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>it.polimi.sr.mockupsr</groupId>
-    <artifactId>MockupVocalService</artifactId>
-    <version>1.0</version>
+    <groupId>it.polimi.rsp.services</groupId>
+    <artifactId>RSP Services</artifactId>
+    <version>2.0</version>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -59,6 +66,21 @@
             <artifactId>ontop-system-sql-owlapi</artifactId>
             <version>3.0.0-beta-2</version>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configurations</artifactId>
+            <version>1.10</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,7 +94,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>Server</mainClass>
+                            <mainClass>it.polimi.rsp.Server</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -103,7 +125,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>Server</mainClass>
+                                    <mainClass>it.polimi.rsp.Server</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
