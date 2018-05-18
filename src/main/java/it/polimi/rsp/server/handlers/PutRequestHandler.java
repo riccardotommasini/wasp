@@ -1,17 +1,19 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers;
 
-import it.polimi.rsp.Endpoint;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Answer;
+import lombok.extern.java.Log;
 import spark.Request;
 import spark.Response;
 
 import java.lang.reflect.Method;
 
-import static spark.Spark.delete;
 import static spark.Spark.put;
 
-public class DeleteRequestHandler extends AbstractRequestHandler {
+@Log
+public class PutRequestHandler extends AbstractRequestHandler {
 
-    public DeleteRequestHandler(Object object, Endpoint endpoint, Method method) {
+    public PutRequestHandler(Object object, Endpoint endpoint, Method method) {
         super(object, endpoint, method);
     }
 
@@ -25,6 +27,7 @@ public class DeleteRequestHandler extends AbstractRequestHandler {
 
     @Override
     public void call() {
-        delete(endpoint.uri, this);
+        log.info("Endpoint PUT: [" + endpoint.uri + "] Ready");
+        put(endpoint.uri, this);
     }
 }

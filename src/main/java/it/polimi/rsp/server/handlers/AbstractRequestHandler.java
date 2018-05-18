@@ -1,9 +1,10 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import it.polimi.rsp.Endpoint;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Answer;
 import lombok.RequiredArgsConstructor;
 import spark.Request;
 

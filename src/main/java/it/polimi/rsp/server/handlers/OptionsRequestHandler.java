@@ -1,18 +1,19 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers;
 
-import it.polimi.rsp.Endpoint;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Answer;
 import lombok.extern.java.Log;
 import spark.Request;
 import spark.Response;
 
 import java.lang.reflect.Method;
 
-import static spark.Spark.put;
+import static spark.Spark.options;
 
 @Log
-public class PutRequestHandler extends AbstractRequestHandler {
+public class OptionsRequestHandler extends AbstractRequestHandler {
 
-    public PutRequestHandler(Object object, Endpoint endpoint, Method method) {
+    public OptionsRequestHandler(Object object, Endpoint endpoint, Method method) {
         super(object, endpoint, method);
     }
 
@@ -26,7 +27,7 @@ public class PutRequestHandler extends AbstractRequestHandler {
 
     @Override
     public void call() {
-        log.info("Endpoint PUT: [" + endpoint.uri + "] Ready");
-        put(endpoint.uri, this);
+        log.info("Endpoint OPTIONS: [" + endpoint.uri + "] Ready");
+        options(endpoint.uri, this);
     }
 }

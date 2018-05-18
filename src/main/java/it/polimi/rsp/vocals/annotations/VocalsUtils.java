@@ -1,8 +1,7 @@
 package it.polimi.rsp.vocals.annotations;
 
 import com.google.gson.JsonObject;
-import it.polimi.rsp.Endpoint;
-import it.polimi.rsp.SpecUtils;
+import it.polimi.rsp.server.model.Endpoint;
 import it.polimi.rsp.server.HttpMethod;
 import it.polimi.rsp.vocals.VOCALS;
 import it.polimi.rsp.vocals.VSD;
@@ -129,9 +128,9 @@ public class VocalsUtils {
         try {
             List<Endpoint> list = new ArrayList<>();
 
-            String qstring = IOUtils.toString(SpecUtils.class.getClassLoader().getResourceAsStream("endpoints.sparql"), Charset.defaultCharset());
-            String uri_query = IOUtils.toString(SpecUtils.class.getClassLoader().getResourceAsStream("uri_params.sparql"), Charset.defaultCharset());
-            String body_query = IOUtils.toString(SpecUtils.class.getClassLoader().getResourceAsStream("body.sparql"), Charset.defaultCharset());
+            String qstring = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("endpoints.sparql"), Charset.defaultCharset());
+            String uri_query = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("uri_params.sparql"), Charset.defaultCharset());
+            String body_query = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("body.sparql"), Charset.defaultCharset());
 
             Query q = QueryFactory.create(qstring);
             ParameterizedSparqlString parametrized_uri_query = new ParameterizedSparqlString();

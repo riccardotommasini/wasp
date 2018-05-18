@@ -1,7 +1,8 @@
-package it.polimi.rsp;
+package it.polimi.rsp.server;
 
-import it.polimi.rsp.server.RequestHandlerFactory;
-import it.polimi.rsp.server.SGraphRequestHandler;
+import it.polimi.rsp.server.handlers.RequestHandlerFactory;
+import it.polimi.rsp.server.handlers.rsp.SGraphRequestHandler;
+import it.polimi.rsp.server.model.Endpoint;
 import it.polimi.rsp.utils.Config;
 import it.polimi.rsp.vocals.annotations.VocalsUtils;
 import lombok.extern.java.Log;

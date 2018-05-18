@@ -1,4 +1,4 @@
-package it.polimi.rsp;
+package it.polimi.rsp.server.model;
 
 import it.polimi.rsp.server.HttpMethod;
 import lombok.RequiredArgsConstructor;

@@ -1,11 +1,11 @@
 package it.polimi.rsp.test.mock.vocals;
 
-import it.polimi.rsp.Endpoint;
-import it.polimi.rsp.Server;
-import it.polimi.rsp.server.Answer;
-import it.polimi.rsp.server.GetRequestHandler;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.Server;
+import it.polimi.rsp.server.model.Answer;
+import it.polimi.rsp.server.handlers.GetRequestHandler;
 import it.polimi.rsp.server.HttpMethod;
-import it.polimi.rsp.server.PostRequestHandler;
+import it.polimi.rsp.server.handlers.PostRequestHandler;
 import it.polimi.rsp.test.mock.MockEngine;
 import it.polimi.rsp.test.mock.MockInputClass;
 import it.polimi.rsp.test.mock.MockReturnClass;

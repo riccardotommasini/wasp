@@ -1,6 +1,8 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers.rsp;
 
-import it.polimi.rsp.Endpoint;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.HttpMethod;
+import it.polimi.rsp.server.handlers.GetRequestHandler;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
 import org.apache.jena.rdf.model.Model;

@@ -1,4 +1,4 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,7 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers;
 
-import it.polimi.rsp.Endpoint;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Answer;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
 import spark.Request;
@@ -8,13 +9,17 @@ import spark.Response;
 
 import java.lang.reflect.Method;
 
-import static spark.Spark.post;
+import static spark.Spark.get;
 
 @Log
-public class PostRequestHandler extends AbstractRequestHandler {
+public class GetRequestHandler extends AbstractRequestHandler {
 
-    public PostRequestHandler(Object object, Endpoint endpoint, Method method) {
+    public GetRequestHandler(Object object, Endpoint endpoint, Method method) {
         super(object, endpoint, method);
+    }
+
+    public GetRequestHandler(Object object, Endpoint endpoint) {
+        super(object, endpoint);
     }
 
     @Override
@@ -27,7 +32,7 @@ public class PostRequestHandler extends AbstractRequestHandler {
 
     @Override
     public void call() {
-        log.info("Endpoint POST: [" + endpoint.uri + "] Ready");
-        post(endpoint.uri, this);
+        log.info("Endpoint GET: [" + endpoint.uri + "] Ready");
+        get(endpoint.uri, this);
     }
 }

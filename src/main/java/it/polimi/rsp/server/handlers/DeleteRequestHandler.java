@@ -1,18 +1,18 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.handlers;
 
-import it.polimi.rsp.Endpoint;
-import lombok.extern.java.Log;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Answer;
 import spark.Request;
 import spark.Response;
 
 import java.lang.reflect.Method;
 
-import static spark.Spark.options;
+import static spark.Spark.delete;
+import static spark.Spark.put;
 
-@Log
-public class OptionsRequestHandler extends AbstractRequestHandler {
+public class DeleteRequestHandler extends AbstractRequestHandler {
 
-    public OptionsRequestHandler(Object object, Endpoint endpoint, Method method) {
+    public DeleteRequestHandler(Object object, Endpoint endpoint, Method method) {
         super(object, endpoint, method);
     }
 
@@ -26,7 +26,6 @@ public class OptionsRequestHandler extends AbstractRequestHandler {
 
     @Override
     public void call() {
-        log.info("Endpoint OPTIONS: [" + endpoint.uri + "] Ready");
-        options(endpoint.uri, this);
+        delete(endpoint.uri, this);
     }
 }
