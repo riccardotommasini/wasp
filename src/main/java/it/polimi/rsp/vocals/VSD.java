@@ -11,22 +11,26 @@ public class VSD {
 
     public final static Property hasService;
     public final static Property name;
-    public final static Resource uri_param;
-    public final static Resource body_param;
+    public final static Property uri_param;
+    public final static Property body_param;
     public final static Property endpoint;
     public final static Property method;
     public final static Resource ProcessingService;
     public final static Property base;
     public final static Property params;
     public final static Property index;
+    public final static Property body;
+    public final static Property type;
 
     static {
         ProcessingService = resource("ProcessingService");
         base = property("base");
+        type = property("type");
         hasService = property("hasService");
         name = property("name");
-        uri_param = resource("uri_param");
-        body_param = resource("body_param");
+        uri_param = property("uri_param");
+        body_param = property("body_param");
+        body = property("body");
         endpoint = property("endpoint");
         method = property("method");
         params = property("params");

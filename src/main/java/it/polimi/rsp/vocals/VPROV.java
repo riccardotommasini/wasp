@@ -8,7 +8,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 public class VPROV {
 
     @Getter
-    private static String uri = "http://w3id.org/rsp/vocals-prov#";
+    private static String uri = "http://w3id.org/rsp/name-prov#";
 
     protected static final Resource resource(String local) {
         return ResourceFactory.createResource(uri + local);

@@ -1,7 +1,7 @@
 package it.polimi.rsp.test.mock;
 
 import it.polimi.rsp.Server;
-import it.polimi.rsp.vocals.annotations.VocalsFactory;
+import it.polimi.rsp.vocals.annotations.VocalsUtils;
 import org.apache.jena.rdf.model.Model;
 
 import java.io.File;
@@ -13,7 +13,7 @@ public class MockServer extends Server {
     public static void main(String[] args) throws IOException {
         if (args.length > 0) {
             MockEngine csparql = new MockEngine("csparql", "http://example.org/");
-            Model model = VocalsFactory.toVocals(csparql, csparql.getName(), csparql.getBase());
+            Model model = VocalsUtils.toVocals(csparql, csparql.getName(), csparql.getBase());
             model.write(new FileOutputStream(new File("./" + csparql.getName() + ".json")), "JSON-LD");
             new MockServer().start(csparql, args[0]);
         }

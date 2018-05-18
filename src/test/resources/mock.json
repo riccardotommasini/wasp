@@ -1,0 +1,60 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "feature" : "http://example.org/MockFeature",
+    "endpoint" : "/custom/:id",
+    "method" : "POST",
+    "name" : "MockFeature",
+    "params" : [ "_:b1", "_:b2" ]
+  }, {
+    "@id" : "_:b1",
+    "@type" : "vsd:body_param",
+    "index" : "1",
+    "name" : "body"
+  }, {
+    "@id" : "_:b2",
+    "@type" : "vsd:uri_param",
+    "index" : "0",
+    "name" : "id"
+  }, {
+    "@id" : "http://example.org/csparql",
+    "@type" : "vsd:ProcessingService",
+    "base" : "http://localhost:8182/",
+    "hasService" : "_:b0",
+    "name" : "csparql"
+  } ],
+  "@context" : {
+    "method" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#method"
+    },
+    "endpoint" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#endpoint"
+    },
+    "params" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#params",
+      "@type" : "@id"
+    },
+    "name" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#name"
+    },
+    "feature" : {
+      "@id" : "http://w3id.org/rsp/vocals#feature",
+      "@type" : "@id"
+    },
+    "index" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#index"
+    },
+    "hasService" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#hasService",
+      "@type" : "@id"
+    },
+    "base" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#base"
+    },
+    "@vocab" : "http://example.org/",
+    "frmt" : "http://www.w3.org/ns/formats/",
+    "vsd" : "http://w3id.org/rsp/vocals-sd#",
+    "vocals" : "http://w3id.org/rsp/vocals#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#"
+  }
+}

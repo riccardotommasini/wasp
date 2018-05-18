@@ -13,17 +13,8 @@ public class MockInputClass implements Mockterface {
     }
 
     @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String body() {
-        return body;
-    }
-
-    @Override
     public String toString() {
         return new Gson().toJson(this, MockInputClass.class);
     }
+
 }
