@@ -1,12 +1,12 @@
 package it.polimi.rsp.test.mock;
 
-import it.polimi.rsp.vocals.annotations.Base;
+import it.polimi.rsp.vocals.annotations.services.ProcessingService;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
 @Log
 @Getter
-@Base(base = "http://localhost:8182/")
+@ProcessingService(host = "localhost", port = 8181)
 public class MockEngine implements MockFeaturePost, MockFeatureGet {
 
     private final String base;

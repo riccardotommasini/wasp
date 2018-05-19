@@ -1,9 +1,9 @@
 package it.polimi.rsp.test.mock;
 
 
-import it.polimi.rsp.vocals.annotations.Feature;
-import it.polimi.rsp.vocals.annotations.Param;
-import it.polimi.rsp.vocals.annotations.RSPService;
+import it.polimi.rsp.vocals.annotations.features.Feature;
+import it.polimi.rsp.vocals.annotations.features.Param;
+import it.polimi.rsp.vocals.annotations.features.RSPService;
 
 @Feature(name = "MockFeatureGet", ns = "http://example.org/")
 public interface MockFeatureGet {

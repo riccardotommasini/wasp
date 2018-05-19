@@ -1,7 +1,7 @@
 package it.polimi.rsp.test.mock;
 
 import it.polimi.rsp.server.Server;
-import it.polimi.rsp.vocals.annotations.VocalsUtils;
+import it.polimi.rsp.vocals.VocalsUtils;
 import org.apache.jena.rdf.model.Model;
 
 import java.io.File;

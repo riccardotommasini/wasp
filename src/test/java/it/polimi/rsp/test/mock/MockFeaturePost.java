@@ -2,11 +2,11 @@ package it.polimi.rsp.test.mock;
 
 
 import it.polimi.rsp.server.HttpMethod;
-import it.polimi.rsp.vocals.annotations.Feature;
-import it.polimi.rsp.vocals.annotations.Param;
-import it.polimi.rsp.vocals.annotations.RSPService;
+import it.polimi.rsp.vocals.annotations.features.Feature;
+import it.polimi.rsp.vocals.annotations.features.Param;
+import it.polimi.rsp.vocals.annotations.features.RSPService;
 
-@Feature(name = "MockFeaturePost", ns = "http://example.org/")
+@Feature(name = "MockFeaturePost")
 public interface MockFeaturePost {
 
     @RSPService(endpoint = "/custompostmethod", method = HttpMethod.POST)
