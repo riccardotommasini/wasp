@@ -1,7 +1,7 @@
 package it.polimi.rsp.server.handlers;
 
 import it.polimi.rsp.server.model.Endpoint;
-import it.polimi.rsp.vocals.annotations.Feature;
+import it.polimi.rsp.vocals.annotations.features.Feature;
 
 import java.util.Arrays;
 import java.util.Optional;

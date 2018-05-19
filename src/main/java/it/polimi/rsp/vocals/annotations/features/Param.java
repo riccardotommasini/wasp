@@ -1,4 +1,4 @@
-package it.polimi.rsp.vocals.annotations;
+package it.polimi.rsp.vocals.annotations.features;
 
 import java.lang.annotation.*;
 

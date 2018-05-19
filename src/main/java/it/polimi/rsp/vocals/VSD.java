@@ -16,6 +16,8 @@ public class VSD {
     public final static Property endpoint;
     public final static Property method;
     public final static Resource ProcessingService;
+    public final static Resource CatalogService;
+    public final static Resource PublishingService;
     public final static Property base;
     public final static Property params;
     public final static Property index;
@@ -24,6 +26,8 @@ public class VSD {
 
     static {
         ProcessingService = resource("ProcessingService");
+        CatalogService = resource("CatalogService");
+        PublishingService = resource("PublishingService");
         base = property("base");
         type = property("type");
         hasService = property("hasService");

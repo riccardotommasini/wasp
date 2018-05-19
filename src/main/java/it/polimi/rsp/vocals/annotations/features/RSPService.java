@@ -1,4 +1,4 @@
-package it.polimi.rsp.vocals.annotations;
+package it.polimi.rsp.vocals.annotations.features;
 
 import it.polimi.rsp.server.HttpMethod;
 
@@ -9,6 +9,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface RSPService {
     String endpoint();
-
     HttpMethod method() default HttpMethod.GET;
 }

@@ -1,16 +1,22 @@
-package it.polimi.rsp.vocals.annotations;
+package it.polimi.rsp.vocals;
 
 import com.google.gson.JsonObject;
-import it.polimi.rsp.server.model.Endpoint;
 import it.polimi.rsp.server.HttpMethod;
-import it.polimi.rsp.vocals.VOCALS;
-import it.polimi.rsp.vocals.VSD;
+import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.vocals.annotations.features.Feature;
+import it.polimi.rsp.vocals.annotations.features.Param;
+import it.polimi.rsp.vocals.annotations.features.RSPService;
+import it.polimi.rsp.vocals.annotations.services.Catalog;
+import it.polimi.rsp.vocals.annotations.services.ProcessingService;
+import it.polimi.rsp.vocals.annotations.services.PublishingService;
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import spark.utils.StringUtils;
@@ -20,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.nio.charset.Charset;
 import java.util.*;
+
 @Log
 public class VocalsUtils {
 
@@ -33,20 +40,24 @@ public class VocalsUtils {
     }
 
 
-    public static Model toVocals(Object o, String name, String base) {
-        return toVocals(o.getClass(), name, base);
+    public static Model toVocals(Class o, String name, String base) {
+        return toVocals(o);
     }
 
-    public static Model toVocals(final Class<?> engine, final String name, final String base) {
+
+    public static Model toVocals(Object o, String name, String base) {
+        return toVocals(o.getClass());
+    }
+
+    public static Model toVocals(final Class<?> engine) {
         Model model = ModelFactory.createDefaultModel();
         model.setNsPrefixes(prefixMap);
+        Resource e = getEngineResource(engine, model);
 
-        final Resource e = model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
-                .addProperty(RDF.type, VSD.ProcessingService)
-                .addProperty(VSD.name, name)
-                .addProperty(VSD.base, engine.getAnnotation(Base.class).base());
+        String base = e.getNameSpace();
 
-        Arrays.stream(engine.getInterfaces()).filter(i -> i.isAnnotationPresent(Feature.class))
+        Class<?>[] interfaces = engine.getInterfaces();
+        Arrays.stream(interfaces).filter(i -> i.isAnnotationPresent(Feature.class))
                 .forEach((Class<?> feature) -> {
 
                     Resource bn = model.createResource();
@@ -57,10 +68,6 @@ public class VocalsUtils {
 
                     RSPService annotation1 = method.getAnnotation(RSPService.class);
                     String endpoint = annotation1.endpoint();
-
-                    Resource feat = model.createProperty(base, feature_annotation.name());
-                    bn.addProperty(VOCALS.feature, feat);
-                    bn.addProperty(VSD.name, feature_annotation.name());
 
                     for (Parameter p : method.getParameters()) {
                         Param param = p.getAnnotation(Param.class);
@@ -75,15 +82,48 @@ public class VocalsUtils {
                             bn.addProperty(VSD.body_param, pbn);
                             pbn.addProperty(VSD.body, serialize(p.getType()).toString());
                         }
+
                         pbn.addProperty(VSD.name, param.name());
                         pbn.addProperty(VSD.index, p.getName().replace("arg", ""));
                     }
+
+                    String ns = "UNKNOWN".equals(feature_annotation.ns()) ? base+"/" : feature_annotation.ns();
+
+                    Resource feat = model.createProperty(ns, feature_annotation.name());
+                    bn.addProperty(VOCALS.feature, feat);
+                    bn.addProperty(VSD.name, feature_annotation.name());
                     bn.addProperty(VSD.endpoint, endpoint);
                     bn.addProperty(VSD.method, annotation1.method().name());
                 });
 
         return model;
     }
+
+    private static Resource getEngineResource(Class<?> engine, Model model) {
+        if (engine.isAnnotationPresent(PublishingService.class)) {
+            PublishingService cat = engine.getAnnotation(PublishingService.class);
+            String base = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
+                    .addProperty(RDF.type, VSD.PublishingService)
+                    .addProperty(VSD.base, base);
+
+        } else if (engine.isAnnotationPresent(ProcessingService.class)) {
+            ProcessingService cat = engine.getAnnotation(ProcessingService.class);
+            String base = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
+                    .addProperty(RDF.type, VSD.ProcessingService)
+                    .addProperty(VSD.base, base);
+        }
+        if (engine.isAnnotationPresent(Catalog.class)) {
+            Catalog cat = engine.getAnnotation(Catalog.class);
+            String base = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
+                    .addProperty(RDF.type, VSD.CatalogService)
+                    .addProperty(VSD.base, base);
+        }
+        return model.createResource();
+    }
+
 
     public static JsonObject serialize(Class<?> c) {
         return serialize(new JsonObject(), "", c);
