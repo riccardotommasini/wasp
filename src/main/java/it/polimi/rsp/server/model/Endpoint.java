@@ -13,8 +13,32 @@ public class Endpoint {
     public final String feature;
     public final Par[] params;
 
+
+
+    public Endpoint(String name, String feature, Par[] params) {
+        this.name = name;
+        this.uri = name;
+        this.feature = feature;
+        this.method = HttpMethod.GET;
+        this.params = params;
+    }
+
+    public Endpoint(String name, String feature) {
+        this(name, feature, new Endpoint.Par[]{});
+    }
+
+
+
     public static class Par {
         public final int index;
+
+        public Par(int index, String name, boolean uri, Class<?> type) {
+            this.index = index;
+            this.name = name;
+            this.uri = uri;
+            this.type = type;
+        }
+
         public final String name;
         public final boolean uri;
         public Class<?> type;
