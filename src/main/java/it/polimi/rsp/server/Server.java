@@ -1,8 +1,10 @@
 package it.polimi.rsp.server;
 
 import it.polimi.rsp.server.handlers.RequestHandlerFactory;
+import it.polimi.rsp.server.handlers.rsp.ObserverRequestHandler;
 import it.polimi.rsp.server.handlers.rsp.SGraphRequestHandler;
 import it.polimi.rsp.server.model.Endpoint;
+import it.polimi.rsp.server.model.Status;
 import it.polimi.rsp.utils.Config;
 import it.polimi.rsp.vocals.VocalsUtils;
 import lombok.extern.java.Log;
@@ -24,12 +26,14 @@ public abstract class Server {
         String name = Config.getInstance().getServerName();
         String base = "http://" + StringUtils.removeLeadingAndTrailingSlashesFrom(host) + ":" + port + "/" + name + "/";
         Model model = VocalsUtils.toVocals(e, name, base);
+        Status.get();
         init(e, port, name, model, VocalsUtils.fromVocals(model));
     }
 
     private void init(Object engine, int port, String name, Model m, List<Endpoint> endpoints) {
         port(port);
         path(name, () -> new SGraphRequestHandler(m).call());
+        path(name, () -> new ObserverRequestHandler(name).call());
         endpoints.forEach(endpoint -> RequestHandlerFactory.getHandler(engine, endpoint)
                 .ifPresent(handler -> path(name, handler::call)));
     }

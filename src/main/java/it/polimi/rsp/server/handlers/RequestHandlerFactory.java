@@ -16,16 +16,16 @@ public class RequestHandlerFactory {
                 .map(aClass -> aClass.getMethods()[0]).map(method -> {
                     switch (endpoint.method) {
                         case POST:
-                            return new PostRequestHandler(engine, endpoint, method);
+                            return new AbstractRequestHandler.PostRequestHandler(engine, endpoint, method);
                         case PUT:
-                            return new PutRequestHandler(engine, endpoint, method);
+                            return new AbstractRequestHandler.PutRequestHandler(engine, endpoint, method);
                         case DELETE:
-                            return new DeleteRequestHandler(engine, endpoint, method);
+                            return new AbstractRequestHandler.DeleteRequestHandler(engine, endpoint, method);
                         case OPTIONS:
-                            return new OptionsRequestHandler(engine, endpoint, method);
+                            return new AbstractRequestHandler.OptionsRequestHandler(engine, endpoint, method);
                         case GET:
                         default:
-                            return new GetRequestHandler(engine, endpoint, method);
+                            return new AbstractRequestHandler.GetRequestHandler(engine, endpoint, method);
                     }
                 });
 
