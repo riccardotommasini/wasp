@@ -1,13 +1,13 @@
 package it.polimi.rsp.utils;
 
+import lombok.extern.java.Log;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
+@Log
 public class Config {
 
     /* Properties */
@@ -26,7 +26,6 @@ public class Config {
     private static final String MESSAGE_LOG = "rsp_engine.message_log";
     private static final String BACK_LOOP = "rsp_engine.back_loop";
     private static final String SGRAPH_QUERY = "rsp_engine.sgraph_query";
-    private static final Logger logger = LoggerFactory.getLogger(Config.class);
     private static Config instance = null;
     private static Configuration config = null;
     private static String rules = null;
@@ -53,7 +52,7 @@ public class Config {
                 }
             }
         } catch (ConfigurationException e) {
-            logger.error("Error while reading the configuration file", e);
+            log.severe("Error while reading the configuration file");
         }
     }
 
@@ -63,7 +62,7 @@ public class Config {
 
     public static Config getInstance() {
         if (instance == null) {
-            logger.info("Configuration not yet initialized!");
+            log.severe("Configuration not yet initialized!");
         }
         return instance;
     }
