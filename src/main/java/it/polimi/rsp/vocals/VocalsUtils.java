@@ -11,13 +11,16 @@ import it.polimi.rsp.vocals.annotations.services.ProcessingService;
 import it.polimi.rsp.vocals.annotations.services.PublishingService;
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.rdf.api.BlankNode;
+import org.apache.commons.rdf.api.Graph;
+import org.apache.commons.rdf.api.IRI;
+import org.apache.commons.rdf.api.RDF;
+import org.apache.commons.rdf.simple.SimpleRDF;
+import org.apache.commons.rdf.simple.Types;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.DCAT;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import spark.utils.StringUtils;
 
@@ -32,6 +35,25 @@ public class VocalsUtils {
 
     public static final Map<String, String> prefixMap = new HashMap<>();
 
+    public static final RDF rdf = new SimpleRDF();
+    public static final String vsd = "http://w3id.org/rsp/vocals-sd#";
+    public static final IRI hasService = rdf.createIRI(vsd + "hasService");
+    public static final IRI processingService = rdf.createIRI(vsd + "ProcessingService");
+    public static final IRI publishingService = rdf.createIRI(vsd + "PublishingService");
+    public static final IRI catalogService = rdf.createIRI(vsd + "CatalogService");
+    public static final IRI base = rdf.createIRI(vsd + "base");
+    public static final IRI type = rdf.createIRI(vsd + "type");
+    public static final IRI uri_param = rdf.createIRI(vsd + "uri_param");
+    public static final IRI body_param = rdf.createIRI(vsd + "body_param");
+    public static final IRI body = rdf.createIRI(vsd + "body");
+    public static final IRI name = rdf.createIRI(vsd + "name");
+    public static final IRI index = rdf.createIRI(vsd + "index");
+    public static final IRI feature = rdf.createIRI(vsd + "feature");
+    public static final IRI endpoint = rdf.createIRI(vsd + "endpoint");
+    public static final IRI method = rdf.createIRI(vsd + "method");
+
+    public static final IRI a = rdf.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+
     static {
         prefixMap.put("vocals", VOCALS.getUri());
         prefixMap.put("vsd", VSD.getUri());
@@ -44,7 +66,6 @@ public class VocalsUtils {
         return toVocals(o);
     }
 
-
     public static Model toVocals(Object o, String name, String base) {
         return toVocals(o.getClass());
     }
@@ -54,7 +75,7 @@ public class VocalsUtils {
         model.setNsPrefixes(prefixMap);
         Resource e = getEngineResource(engine, model);
 
-        String base = e.getNameSpace();
+        String engine_base = e.getNameSpace();
 
         Class<?>[] interfaces = engine.getInterfaces();
         Arrays.stream(interfaces).filter(i -> i.isAnnotationPresent(Feature.class))
@@ -78,16 +99,28 @@ public class VocalsUtils {
                             endpoint += "/:" + param.name();
                             bn.addProperty(VSD.uri_param, pbn);
                             pbn.addProperty(VSD.type, type_selector(p.getType()));
+                            pbn.addProperty(VSD.index, p.getName().replace("arg", ""));
                         } else {
-                            bn.addProperty(VSD.body_param, pbn);
-                            pbn.addProperty(VSD.body, serialize(p.getType()).toString());
+
+
+                            JsonObject serialize = serialize(param, p.getType());
+                            serialize.entrySet().forEach(entry -> {
+                                Resource bp = model.createResource();
+                                bn.addProperty(VSD.body_param, bp);
+                                bp.addProperty(VSD.name, entry.getKey())
+                                        .addProperty(org.apache.jena.vocabulary.RDF.type,
+                                                model.createResource(entry.getValue().getAsString()))
+                                        .addProperty(VSD.index, p.getName().replace("arg", ""));
+
+                            });
+
+                            bn.addProperty(VSD.body, serialize.toString());
                         }
 
                         pbn.addProperty(VSD.name, param.name());
-                        pbn.addProperty(VSD.index, p.getName().replace("arg", ""));
                     }
 
-                    String ns = "UNKNOWN".equals(feature_annotation.ns()) ? base+"/" : feature_annotation.ns();
+                    String ns = "UNKNOWN".equals(feature_annotation.ns()) ? engine_base + "/" : feature_annotation.ns();
 
                     Resource feat = model.createProperty(ns, feature_annotation.name());
                     bn.addProperty(VOCALS.feature, feat);
@@ -99,68 +132,150 @@ public class VocalsUtils {
         return model;
     }
 
-    private static Resource getEngineResource(Class<?> engine, Model model) {
+
+    private static IRI getEngineResource2(Class<?> engine, Graph g) {
+        Graph graph = rdf.createGraph();
+        String b = "";
+        IRI p = null;
         if (engine.isAnnotationPresent(PublishingService.class)) {
             PublishingService cat = engine.getAnnotation(PublishingService.class);
-            String base = "http://" + cat.host() + ":" + cat.port();
-            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
-                    .addProperty(RDF.type, VSD.PublishingService)
-                    .addProperty(VSD.base, base);
-
+            b = "http://" + cat.host() + ":" + cat.port();
+            p = publishingService;
         } else if (engine.isAnnotationPresent(ProcessingService.class)) {
             ProcessingService cat = engine.getAnnotation(ProcessingService.class);
-            String base = "http://" + cat.host() + ":" + cat.port();
-            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
-                    .addProperty(RDF.type, VSD.ProcessingService)
-                    .addProperty(VSD.base, base);
+            b = "http://" + cat.host() + ":" + cat.port();
+            p = processingService;
         }
         if (engine.isAnnotationPresent(Catalog.class)) {
             Catalog cat = engine.getAnnotation(Catalog.class);
-            String base = "http://" + cat.host() + ":" + cat.port();
-            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(base))
-                    .addProperty(RDF.type, VSD.CatalogService)
-                    .addProperty(VSD.base, base);
+            b = "http://" + cat.host() + ":" + cat.port();
+            p = catalogService;
         }
+
+        IRI e = rdf.createIRI(StringUtils.removeLeadingAndTrailingSlashesFrom(b));
+        graph.add(rdf.createTriple(e, a, p));
+        graph.add(rdf.createTriple(e, base, rdf.createLiteral(b)));
+
+        return e;
+    }
+
+    public static Graph toVocals2(final Class<?> engine) {
+
+        Graph graph = rdf.createGraph();
+        IRI engine_uri = getEngineResource2(engine, graph);
+
+        Class<?>[] interfaces = engine.getInterfaces();
+        Arrays.stream(interfaces).filter(i -> i.isAnnotationPresent(Feature.class))
+                .forEach((Class<?> f) -> {
+
+                    BlankNode s = rdf.createBlankNode();
+                    graph.add(rdf.createTriple(engine_uri, hasService, s));
+
+                    Method m = f.getMethods()[0];
+                    Feature feature_annotation = f.getAnnotation(Feature.class);
+
+                    RSPService annotation1 = m.getAnnotation(RSPService.class);
+                    String end = annotation1.endpoint();
+
+                    for (Parameter p : m.getParameters()) {
+                        Param param = p.getAnnotation(Param.class);
+
+                        BlankNode pbn = rdf.createBlankNode();
+
+                        if (param.uri()) {
+                            end += "/:" + param.name();
+                            graph.add(rdf.createTriple(s, uri_param, pbn));
+                            Resource resource = type_selector(p.getType());
+                            graph.add(rdf.createTriple(pbn, type, rdf.createIRI(resource.getURI())));
+                        } else {
+                            graph.add(rdf.createTriple(s, body_param, pbn));
+                            graph.add(rdf.createTriple(pbn, body, rdf.createLiteral(serialize(param, p.getType()).toString(), Types.XSD_STRING)));
+                        }
+
+                        graph.add(rdf.createTriple(pbn, name, rdf.createLiteral(param.name(), Types.XSD_STRING)));
+                        graph.add(rdf.createTriple(pbn, index, rdf.createLiteral(p.getName().replace("arg", ""), Types.XSD_INTEGER)));
+
+                    }
+
+                    String ns = "UNKNOWN".equals(feature_annotation.ns()) ? engine_uri.getIRIString() + "/" : feature_annotation.ns();
+
+                    IRI feat = rdf.createIRI(ns + feature_annotation.name());
+
+                    graph.add(rdf.createTriple(s, feature, feat));
+                    graph.add(rdf.createTriple(s, name, rdf.createLiteral(feature_annotation.name(), Types.XSD_STRING)));
+                    graph.add(rdf.createTriple(s, endpoint, rdf.createLiteral(end, Types.XSD_STRING)));
+                    graph.add(rdf.createTriple(s, method, rdf.createLiteral(annotation1.method().name(), Types.XSD_STRING)));
+
+                });
+
+
+        return graph;
+    }
+
+    private static Resource getEngineResource(Class<?> engine, Model model) {
+        String uri = "";
+        if (engine.isAnnotationPresent(PublishingService.class)) {
+            PublishingService cat = engine.getAnnotation(PublishingService.class);
+            uri = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(uri))
+                    .addProperty(org.apache.jena.vocabulary.RDF.type, VSD.PublishingService)
+                    .addProperty(VSD.base, uri);
+
+        } else if (engine.isAnnotationPresent(ProcessingService.class)) {
+            ProcessingService cat = engine.getAnnotation(ProcessingService.class);
+            uri = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(uri))
+                    .addProperty(org.apache.jena.vocabulary.RDF.type, VSD.ProcessingService)
+                    .addProperty(VSD.base, uri);
+        }
+        if (engine.isAnnotationPresent(Catalog.class)) {
+            Catalog cat = engine.getAnnotation(Catalog.class);
+            uri = "http://" + cat.host() + ":" + cat.port();
+            return model.createResource(StringUtils.removeLeadingAndTrailingSlashesFrom(uri))
+                    .addProperty(org.apache.jena.vocabulary.RDF.type, VSD.CatalogService)
+                    .addProperty(VSD.base, uri);
+        }
+
         return model.createResource();
     }
 
-
-    public static JsonObject serialize(Class<?> c) {
-        return serialize(new JsonObject(), "", c);
+    public static JsonObject serialize(Param param, Class<?> c) {
+        return serialize(param, new JsonObject(), "", c);
     }
 
-    public static JsonObject serialize(final JsonObject obj, String name, Class<?> c) {
+    public static JsonObject serialize(Param param2, final JsonObject obj, String name, Class<?> c) {
         if (c.isPrimitive() || String.class.equals(c)) {
-            obj.addProperty(name, type_selector(c));
+            String n = name.isEmpty() ? param2.name() : name;
+            obj.addProperty(n, type_selector(c).getURI());
         } else {
             Arrays.stream(c.getFields())
-                    .forEach(field -> serialize(obj, field.getName(), field.getType()));
+                    .forEach(field -> serialize(param2, obj, field.getName(), field.getType()));
 
             Arrays.stream(c.getMethods())
                     .filter(m -> m.getName().
                             startsWith("set"))
                     .filter(method -> method.getParameterCount() == 1)
                     .forEach(method ->
-                            serialize(obj, method.getName().replace("set", ""), method.getParameters()[0].getType()));
+                            serialize(param2, obj, method.getName().replace("set", ""), method.getParameters()[0].getType()));
         }
 
         return obj;
     }
 
-    public static String type_selector(Class<?> c) {
+    public static Resource type_selector(Class<?> c) {
         if (String.class.equals(c))
-            return XSD.xstring.getURI();
+            return XSD.xstring;
         else if (Integer.class.equals(c))
-            return XSD.integer.getURI();
+            return XSD.integer;
         else if (Long.class.equals(c))
-            return XSD.xlong.getURI();
+            return XSD.xlong;
         else if (Boolean.class.equals(c))
-            return XSD.xboolean.getURI();
+            return XSD.xboolean;
         else if (Float.class.equals(c))
-            return XSD.xfloat.getURI();
+            return XSD.xfloat;
         else if (Double.class.equals(c))
-            return XSD.xdouble.getURI();
-        return "";
+            return XSD.xdouble;
+        else return XSD.xstring;
     }
 
     public static List<Endpoint> fromVocals(Model model) {
@@ -179,7 +294,6 @@ public class VocalsUtils {
 
             ParameterizedSparqlString parametrized_body_query = new ParameterizedSparqlString();
             parametrized_body_query.setCommandText(body_query);
-
 
             QueryExecution queryExecution = QueryExecutionFactory.create(q, model);
 
@@ -211,9 +325,10 @@ public class VocalsUtils {
 
                 while (param.hasNext()) {
                     QuerySolution next = param.next();
-                    String body = next.get("?body").toString();
+                    String name = next.get("?name").toString().replace("\\", "");
                     int index = Integer.parseInt(next.get("?index").toString());
-                    params.add(new Endpoint.Par(body, index, false));
+                    log.info(name);
+                    params.add(new Endpoint.Par(name, index, false));
                 }
 
                 params.sort((o1, o2) -> o1.index < o2.index ? -1 : (

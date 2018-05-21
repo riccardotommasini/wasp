@@ -25,6 +25,7 @@ public class VSD {
     public final static Property type;
 
     static {
+
         ProcessingService = resource("ProcessingService");
         CatalogService = resource("CatalogService");
         PublishingService = resource("PublishingService");

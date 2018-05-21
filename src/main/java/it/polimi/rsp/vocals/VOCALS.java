@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
 
 public class VOCALS  {
 
@@ -13,7 +14,6 @@ public class VOCALS  {
     public static Property feature;
 
     static {
-
         feature = property("feature");
     }
 

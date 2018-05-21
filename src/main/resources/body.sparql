@@ -1,12 +1,11 @@
 PREFIX vsd: <http://w3id.org/rsp/vocals-sd#>
 PREFIX vocals: <http://w3id.org/rsp/vocals#>
 
-SELECT ?body ?index
+SELECT ?name ?index
 WHERE  {
     ?service vocals:feature ?feature ;
               vsd:body_param ?param .
     ?param vsd:name ?name ;
-           vsd:index ?index ;
-           vsd:body ?body .
+           vsd:index ?index .
 }
 ORDER BY ?index
