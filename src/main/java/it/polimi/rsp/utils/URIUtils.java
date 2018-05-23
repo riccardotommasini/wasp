@@ -19,4 +19,12 @@ public class URIUtils {
         RSPService service = m.getAnnotation(RSPService.class);
         return base + SLASH + service + SLASH + param;
     }
+
+    public static String cleanProtocols(String id1) {
+        return id1.replace("http://", "")
+                .replace("http://", "")
+                .replace("https://", "")
+                .replace("ws://", "")
+                .replace("wss://", "");
+    }
 }

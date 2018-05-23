@@ -1,4 +1,4 @@
-package it.polimi.rsp.test.mock;
+package it.polimi.rsp.test.mock.model;
 
 import com.google.gson.Gson;
 import it.polimi.rsp.server.model.Stream;

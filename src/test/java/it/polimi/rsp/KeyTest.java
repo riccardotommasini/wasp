@@ -3,7 +3,7 @@ package it.polimi.rsp;
 import it.polimi.rsp.server.model.Key;
 import it.polimi.rsp.server.model.KeyFactory;
 import it.polimi.rsp.server.model.Stream;
-import it.polimi.rsp.test.mock.InStream;
+import it.polimi.rsp.test.mock.model.InStream;
 import org.junit.Test;
 
 import java.util.HashMap;

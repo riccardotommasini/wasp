@@ -3,8 +3,8 @@ package it.polimi.rsp;
 import it.polimi.rsp.server.model.QueryStream;
 import it.polimi.rsp.server.model.Stream;
 import it.polimi.rsp.server.web.*;
-import it.polimi.rsp.test.mock.InStream;
-import it.polimi.rsp.test.mock.Query;
+import it.polimi.rsp.test.mock.model.InStream;
+import it.polimi.rsp.test.mock.model.Query;
 import org.junit.Test;
 import spark.Service;
 

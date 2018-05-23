@@ -1,4 +1,4 @@
-package it.polimi.rsp.test.mock;
+package it.polimi.rsp.test.mock.model;
 
 import it.polimi.rsp.server.web.Sink;
 import it.polimi.rsp.server.web.Task;

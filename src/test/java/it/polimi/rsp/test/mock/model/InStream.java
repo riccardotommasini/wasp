@@ -1,4 +1,4 @@
-package it.polimi.rsp.test.mock;
+package it.polimi.rsp.test.mock.model;
 
 import it.polimi.rsp.server.model.Stream;
 import it.polimi.rsp.vocals.annotations.model.Deletable;

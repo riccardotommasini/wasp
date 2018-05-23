@@ -9,7 +9,7 @@ import it.polimi.rsp.server.model.StatusManager;
 import it.polimi.rsp.server.model.Stream;
 import it.polimi.rsp.server.web.Proxy;
 import it.polimi.rsp.server.web.Task;
-import it.polimi.rsp.test.mock.EmptyTask;
+import it.polimi.rsp.test.mock.model.EmptyTask;
 import org.junit.Test;
 
 import java.util.Observer;

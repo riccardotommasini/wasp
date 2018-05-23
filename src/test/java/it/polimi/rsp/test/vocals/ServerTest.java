@@ -5,9 +5,9 @@ import it.polimi.rsp.server.Server;
 import it.polimi.rsp.server.handlers.AbstractReflectiveRequestHandler;
 import it.polimi.rsp.server.model.Answer;
 import it.polimi.rsp.server.model.Endpoint;
-import it.polimi.rsp.test.mock.InStream;
+import it.polimi.rsp.test.mock.model.InStream;
 import it.polimi.rsp.test.mock.MockEngine;
-import it.polimi.rsp.test.mock.QueryBody;
+import it.polimi.rsp.test.mock.model.QueryBody;
 import org.junit.Test;
 
 import java.lang.reflect.Method;

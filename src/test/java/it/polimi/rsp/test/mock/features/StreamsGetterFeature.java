@@ -1,6 +1,7 @@
-package it.polimi.rsp.test.mock;
+package it.polimi.rsp.test.mock.features;
 
 
+import it.polimi.rsp.test.mock.model.InStream;
 import it.polimi.rsp.vocals.annotations.features.Feature;
 import it.polimi.rsp.vocals.annotations.features.RSPService;
 
