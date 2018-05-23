@@ -18,6 +18,6 @@ public class Answer {
 
     @Override
     public String toString() {
-        return gson.toJson(body);
+        return body.toString();
     }
 }

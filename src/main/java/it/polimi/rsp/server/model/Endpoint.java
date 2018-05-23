@@ -1,8 +1,11 @@
 package it.polimi.rsp.server.model;
 
 import it.polimi.rsp.server.HttpMethod;
+import it.polimi.rsp.utils.URIUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.Arrays;
 
 @ToString
 @RequiredArgsConstructor
@@ -13,20 +16,17 @@ public class Endpoint {
     public final String feature;
     public final Par[] params;
 
-
-
-    public Endpoint(String name, String feature, Par[] params) {
+    public Endpoint(String name,  String feature, Par[] params) {
         this.name = name;
-        this.uri = name;
         this.feature = feature;
         this.method = HttpMethod.GET;
         this.params = params;
+        this.uri = name;
     }
 
     public Endpoint(String name, String feature) {
         this(name, feature, new Endpoint.Par[]{});
     }
-
 
 
     public static class Par {
@@ -48,5 +48,21 @@ public class Endpoint {
             this.name = name;
             this.uri = uri;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        return (((Endpoint) o).method.equals(method) && ((Endpoint) o).uri.equals(uri));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (uri != null ? uri.hashCode() : 0);
+        result = 31 * result + (method != null ? method.hashCode() : 0);
+        return result;
     }
 }
