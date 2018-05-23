@@ -112,7 +112,7 @@ public class VocalsFactory {
 //                                createDeleteEndpoint(model, e, delname, URIUtils.addParam(endpt, field), field));
 //                    }
 
-                    Resource service = model.createResource("feature" + random.nextInt(interfaces.length * 2));
+                    Resource service = model.createResource("feature" + random.nextInt(interfaces.length * interfaces.length));
                     e.addProperty(VSD.hasService, service);
 
                     Feature feature_annotation = feature.getAnnotation(Feature.class);
