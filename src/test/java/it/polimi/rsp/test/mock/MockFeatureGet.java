@@ -9,6 +9,6 @@ import it.polimi.rsp.vocals.annotations.features.RSPService;
 public interface MockFeatureGet {
 
     @RSPService(endpoint = "/customgetmethod")
-    MockReturnClass customGetMethod(@Param(name = "uri_param1", uri = true) String id);
+    InStream customGetMethod(@Param(name = "uri_param1", uri = true) String id);
 
 }

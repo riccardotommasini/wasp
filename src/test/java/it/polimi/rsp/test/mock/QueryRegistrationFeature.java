@@ -6,12 +6,11 @@ import it.polimi.rsp.vocals.annotations.features.Feature;
 import it.polimi.rsp.vocals.annotations.features.Param;
 import it.polimi.rsp.vocals.annotations.features.RSPService;
 
-@Feature(name = "MockFeaturePost")
-public interface MockFeaturePost {
+@Feature(name = "QueryRegistrationFeature")
+public interface QueryRegistrationFeature {
 
-    @RSPService(endpoint = "/custompostmethod", method = HttpMethod.POST)
-    MockReturnClass customPostMethod(@Param(name = "uri_param1", uri = true) String id,
-                                     @Param(name = "body_param2") MockInputClass body);
+    @RSPService(endpoint = "/queries", method = HttpMethod.POST)
+    Query register_query(@Param(name = "body") QueryBody body);
 
 }
 

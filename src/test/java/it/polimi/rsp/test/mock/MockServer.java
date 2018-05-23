@@ -12,7 +12,7 @@ public class MockServer extends Server {
 
     public static void main(String[] args) throws IOException {
         if (args.length > 0) {
-            MockEngine csparql = new MockEngine("csparql", "http://example.org/");
+            MockEngine csparql = new MockEngine("csparql", "http://localhost:8181/csparql");
             Model model = VocalsUtils.toVocals(csparql, csparql.getName(), csparql.getBase());
             model.write(new FileOutputStream(new File("./" + csparql.getName() + ".json")), "JSON-LD");
             new MockServer().start(csparql, args[0]);

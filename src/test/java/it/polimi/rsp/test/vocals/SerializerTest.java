@@ -1,22 +1,42 @@
 package it.polimi.rsp.test.vocals;
 
+import com.github.jsonldjava.core.JsonLdError;
+import com.github.jsonldjava.core.RDFDataset;
+import com.github.jsonldjava.core.RDFDatasetUtils;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import it.polimi.rsp.test.mock.MockInputClass;
+import it.polimi.rsp.test.mock.MockEngine;
+import it.polimi.rsp.vocals.VocalsUtils;
 import lombok.ToString;
+import org.apache.commons.rdf.api.BlankNode;
+import org.apache.commons.rdf.api.Graph;
+import org.apache.commons.rdf.api.Quad;
+import org.apache.commons.rdf.api.RDF;
+import org.apache.commons.rdf.simple.SimpleRDF;
 import org.junit.Test;
 
-import static it.polimi.rsp.vocals.VocalsUtils.serialize;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 
 public class SerializerTest {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException, JsonLdError {
+        MockEngine engine = new MockEngine("csparql", "http://localhost");
 
-        System.out.println(serialize(new JsonObject(), "id", String.class));
-        System.out.println(serialize(new JsonObject(), "", MockInputClass.class).toString());
+        Graph x = VocalsUtils.toVocals2(engine.getClass());
+        RDF rdf = new SimpleRDF();
+        BlankNode blankNode = rdf.createBlankNode();
 
+        String collect = x.stream()
+                .map(o -> rdf.createQuad(blankNode, o.getSubject(), o.getPredicate(), o.getObject()))
+                .map(Quad::toString).collect(Collectors.joining("\t"));
+
+        System.out.println(collect);
+        RDFDataset rdfDataset = RDFDatasetUtils.parseNQuads(collect);
+
+        System.out.println(rdfDataset);
     }
 
     @Test
