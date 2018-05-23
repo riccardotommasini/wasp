@@ -1,4 +1,4 @@
-package it.polimi.rsp;
+package it.polimi.rsp.server.web;
 
 import it.polimi.rsp.server.model.Stream;
 import it.polimi.rsp.server.web.Sink;
