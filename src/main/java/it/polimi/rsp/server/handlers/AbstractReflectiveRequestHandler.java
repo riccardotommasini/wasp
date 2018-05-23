@@ -4,20 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import it.polimi.rsp.server.model.Answer;
 import it.polimi.rsp.server.model.Endpoint;
-import it.polimi.rsp.server.model.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static spark.Spark.*;
+import static it.polimi.rsp.server.MyService.*;
 
 @RequiredArgsConstructor
-public abstract class AbstractRequestHandler implements RequestHandler {
+public abstract class AbstractReflectiveRequestHandler implements RequestHandler, Route {
 
     protected static final Gson gson = new Gson();
     protected static final int HTTP_BAD_REQUEST = 400;
@@ -27,7 +27,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
     protected Method method;
     protected int param_num;
 
-    public AbstractRequestHandler(Object engine, Endpoint endpoint, Method method) {
+    public AbstractReflectiveRequestHandler(Object engine, Endpoint endpoint, Method method) {
         this(engine, endpoint);
         this.method = method;
         Class<?>[] parameterTypes = method.getParameterTypes();
@@ -41,7 +41,8 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 
         Object[] argvs = new Object[param_num];
 
-        for (Endpoint.Par param : endpoint.params) {
+        for (int i = 0; i < param_num; i++) {
+            Endpoint.Par param = endpoint.params[i];
             if (param.uri)
                 argvs[param.index] = r.params(param.name);
             else if (param.type != null && (param.type.isPrimitive() || String.class.equals(param.type))) {
@@ -67,24 +68,15 @@ public abstract class AbstractRequestHandler implements RequestHandler {
         try {
             //TODO set up a return method that is actually meaningful
             Object invoke = method.invoke(engine, params);
-
-            Status.add(invoke);
             return new Answer(200, invoke);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return new Answer(HTTP_BAD_REQUEST, e.getCause());
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            return new Answer(HTTP_BAD_REQUEST, e.getCause());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return new Answer(HTTP_BAD_REQUEST, e.getCause());
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+            return new Answer(HTTP_BAD_REQUEST, e.getCause().getMessage());
         }
     }
 
 
     @Log
-    public static class GetRequestHandler extends AbstractRequestHandler {
+    public static class GetRequestHandler extends AbstractReflectiveRequestHandler {
 
         public GetRequestHandler(Object object, Endpoint endpoint, Method method) {
             super(object, endpoint, method);
@@ -102,7 +94,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
     }
 
     @Log
-    public static class PostRequestHandler extends AbstractRequestHandler {
+    public static class PostRequestHandler extends AbstractReflectiveRequestHandler {
 
         public PostRequestHandler(Object object, Endpoint endpoint, Method method) {
             super(object, endpoint, method);
@@ -117,7 +109,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 
 
     @Log
-    public static class PutRequestHandler extends AbstractRequestHandler {
+    public static class PutRequestHandler extends AbstractReflectiveRequestHandler {
 
         public PutRequestHandler(Object object, Endpoint endpoint, Method method) {
             super(object, endpoint, method);
@@ -132,7 +124,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 
 
     @Log
-    public static class OptionsRequestHandler extends AbstractRequestHandler {
+    public static class OptionsRequestHandler extends AbstractReflectiveRequestHandler {
 
         public OptionsRequestHandler(Object object, Endpoint endpoint, Method method) {
             super(object, endpoint, method);
@@ -147,7 +139,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 
 
     @Log
-    public static class DeleteRequestHandler extends AbstractRequestHandler {
+    public static class DeleteRequestHandler extends AbstractReflectiveRequestHandler {
 
         public DeleteRequestHandler(Object object, Endpoint endpoint, Method method) {
             super(object, endpoint, method);

@@ -1,7 +1,7 @@
-package it.polimi.rsp.server.handlers.rsp;
+package it.polimi.rsp.server.handlers.std;
 
 import it.polimi.rsp.server.HttpMethod;
-import it.polimi.rsp.server.handlers.AbstractRequestHandler;
+import it.polimi.rsp.server.handlers.AbstractReflectiveRequestHandler;
 import it.polimi.rsp.server.model.Endpoint;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 import static spark.Spark.get;
 
 @Log
-public class SGraphRequestHandler extends AbstractRequestHandler {
+public class SGraphRequestHandler extends AbstractReflectiveRequestHandler {
 
     private Model model;
 

@@ -1,10 +1,10 @@
 package it.polimi.rsp.server;
 
 import it.polimi.rsp.server.handlers.RequestHandlerFactory;
-import it.polimi.rsp.server.handlers.rsp.ObserverRequestHandler;
-import it.polimi.rsp.server.handlers.rsp.SGraphRequestHandler;
+import it.polimi.rsp.server.handlers.std.ObserverRequestHandler;
+import it.polimi.rsp.server.handlers.std.SGraphRequestHandler;
 import it.polimi.rsp.server.model.Endpoint;
-import it.polimi.rsp.server.model.Status;
+import it.polimi.rsp.server.model.StatusManager;
 import it.polimi.rsp.utils.Config;
 import it.polimi.rsp.vocals.VocalsUtils;
 import lombok.extern.java.Log;
@@ -13,8 +13,9 @@ import spark.utils.StringUtils;
 
 import java.util.List;
 
-import static spark.Spark.path;
-import static spark.Spark.port;
+import static it.polimi.rsp.server.MyService.path;
+import static it.polimi.rsp.server.MyService.port;
+
 
 @Log
 public abstract class Server {
@@ -26,16 +27,20 @@ public abstract class Server {
         String name = Config.getInstance().getServerName();
         String base = "http://" + StringUtils.removeLeadingAndTrailingSlashesFrom(host) + ":" + port + "/" + name + "/";
         Model model = VocalsUtils.toVocals(e, name, base);
-        Status.get();
-        init(e, port, name, model, VocalsUtils.fromVocals(model));
+        StatusManager.get();
+        init(e, host, port, name, model, VocalsUtils.fromVocals(model));
     }
 
-    private void init(Object engine, int port, String name, Model m, List<Endpoint> endpoints) {
+    private void init(Object engine, String host, int port, String name, Model m, List<Endpoint> endpoints) {
         port(port);
         path(name, () -> new SGraphRequestHandler(m).call());
-        path(name, () -> new ObserverRequestHandler(name).call());
-        endpoints.forEach(endpoint -> RequestHandlerFactory.getHandler(engine, endpoint)
+        path(name, () -> new ObserverRequestHandler(name, host, port + 1).call());
+        endpoints.forEach(endpoint -> RequestHandlerFactory.getServices(engine, endpoint)
                 .ifPresent(handler -> path(name, handler::call)));
+        // endpoints.stream().filter(endpoint -> HttpMethod.GET.equals(endpoint.method)).forEach(endpoint -> RequestHandlerFactory.getGetters(engine, endpoint)
+        //        .ifPresent(handler -> path(name, handler::call)));
+        // endpoints.stream().filter(endpoint -> HttpMethod.DELETE.equals(endpoint.method)).forEach(endpoint -> RequestHandlerFactory.getDeleters(engine, endpoint)
+        //      .ifPresent(handler -> path(name, handler::call)));
     }
 
 
