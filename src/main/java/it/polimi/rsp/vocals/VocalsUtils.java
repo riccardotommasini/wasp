@@ -1,5 +1,7 @@
 package it.polimi.rsp.vocals;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.polimi.rsp.server.HttpMethod;
 import it.polimi.rsp.server.model.Endpoint;
@@ -45,7 +47,7 @@ public class VocalsUtils {
     public static final IRI type = rdf.createIRI(vsd + "type");
     public static final IRI uri_param = rdf.createIRI(vsd + "uri_param");
     public static final IRI body_param = rdf.createIRI(vsd + "body_param");
-    public static final IRI body = rdf.createIRI(vsd + "body");
+    public static final IRI body = rdf.createIRI(vsd + "uri");
     public static final IRI name = rdf.createIRI(vsd + "name");
     public static final IRI index = rdf.createIRI(vsd + "index");
     public static final IRI feature = rdf.createIRI(vsd + "feature");
@@ -77,14 +79,40 @@ public class VocalsUtils {
 
         String engine_base = e.getNameSpace();
 
+        Random random = new Random(0);
+
         Class<?>[] interfaces = engine.getInterfaces();
         Arrays.stream(interfaces).filter(i -> i.isAnnotationPresent(Feature.class))
                 .forEach((Class<?> feature) -> {
 
-                    Resource bn = model.createResource();
-                    e.addProperty(VSD.hasService, bn);
-
                     Method method = feature.getMethods()[0];
+
+//                    Class<?> returnType = method.getReturnType();
+//                    if (returnType.isAnnotationPresent(Exposed.class)) {
+//                        Exposed annotation = returnType.getAnnotation(Exposed.class);
+//                        String name = annotation.name();
+//                        String endpt = URIUtils.SLASH + name;
+//                        createGetterEndpoint(model, e, name, endpt, "");
+//                        Arrays.stream(returnType.getFields())
+//                                .filter(field -> field.isAnnotationPresent(Key.class))
+//                                .map(Field::getName).forEach(field ->
+//                                createGetterEndpoint(model, e, name, URIUtils.addParam(endpt, field), field));
+//                    }
+//
+//                    if (returnType.isAnnotationPresent(Deletable.class)) {
+//                        Deletable del = returnType.getAnnotation(Deletable.class);
+//                        String delname = del.name();
+//                        String endpt = URIUtils.SLASH + delname;
+//                        createDeleteEndpoint(model, e, delname, endpt, "");
+//                        Arrays.stream(returnType.getFields())
+//                                .filter(field -> field.isAnnotationPresent(Key.class))
+//                                .map(Field::getName).forEach(field ->
+//                                createDeleteEndpoint(model, e, delname, URIUtils.addParam(endpt, field), field));
+//                    }
+
+                    Resource service = model.createResource("feature" + random.nextInt(interfaces.length * 2));
+                    e.addProperty(VSD.hasService, service);
+
                     Feature feature_annotation = feature.getAnnotation(Feature.class);
 
                     RSPService annotation1 = method.getAnnotation(RSPService.class);
@@ -92,29 +120,28 @@ public class VocalsUtils {
 
                     for (Parameter p : method.getParameters()) {
                         Param param = p.getAnnotation(Param.class);
-
                         Resource pbn = model.createResource();
 
                         if (param.uri()) {
                             endpoint += "/:" + param.name();
-                            bn.addProperty(VSD.uri_param, pbn);
+                            service.addProperty(VSD.uri_param, pbn);
                             pbn.addProperty(VSD.type, type_selector(p.getType()));
                             pbn.addProperty(VSD.index, p.getName().replace("arg", ""));
                         } else {
-
-
-                            JsonObject serialize = serialize(param, p.getType());
+                            JsonObject serialize = serialize(param, p.getType()).getAsJsonObject();
                             serialize.entrySet().forEach(entry -> {
                                 Resource bp = model.createResource();
-                                bn.addProperty(VSD.body_param, bp);
-                                bp.addProperty(VSD.name, entry.getKey())
-                                        .addProperty(org.apache.jena.vocabulary.RDF.type,
-                                                model.createResource(entry.getValue().getAsString()))
-                                        .addProperty(VSD.index, p.getName().replace("arg", ""));
+                                service.addProperty(VSD.body_param, bp);
+                                bp.addProperty(VSD.name, entry.getKey());
+                                Resource t = !entry.getValue().isJsonArray() ?
+                                        model.createResource(entry.getValue().getAsString()) :
+                                        model.createResource("array");
 
+                                bp.addProperty(org.apache.jena.vocabulary.RDF.type, t)
+                                        .addProperty(VSD.index, p.getName().replace("arg", ""));
                             });
 
-                            bn.addProperty(VSD.body, serialize.toString());
+                            service.addProperty(VSD.body, serialize.toString());
                         }
 
                         pbn.addProperty(VSD.name, param.name());
@@ -123,13 +150,42 @@ public class VocalsUtils {
                     String ns = "UNKNOWN".equals(feature_annotation.ns()) ? engine_base + "/" : feature_annotation.ns();
 
                     Resource feat = model.createProperty(ns, feature_annotation.name());
-                    bn.addProperty(VOCALS.feature, feat);
-                    bn.addProperty(VSD.name, feature_annotation.name());
-                    bn.addProperty(VSD.endpoint, endpoint);
-                    bn.addProperty(VSD.method, annotation1.method().name());
+                    service.addProperty(VOCALS.feature, feat);
+                    service.addProperty(VSD.name, feature_annotation.name());
+                    service.addProperty(VSD.endpoint, endpoint);
+                    service.addProperty(VSD.method, annotation1.method().name());
                 });
 
         return model;
+    }
+
+    private static void createDeleteEndpoint(Model m, Resource e, String name, String endpt, String key) {
+        Resource rr = m.createResource("d" + endpt);
+        e.addProperty(VSD.hasService, rr);
+        rr.addProperty(VSD.name, "d" + endpt)
+                .addProperty(VSD.endpoint, endpt)
+                .addProperty(VSD.method, HttpMethod.DELETE.name())
+                .addProperty(VOCALS.feature, VSD.ModelDeletion);
+
+        if (key != null && !key.isEmpty()) {
+            Resource p = m.createResource();
+            rr.addProperty(VSD.uri_param, p);
+            p.addProperty(VSD.name, key).addProperty(VSD.index, "0");
+        }
+    }
+
+    private static void createGetterEndpoint(Model m, Resource e, String name, String endpt, String key) {
+        Resource rr = m.createResource(endpt);
+        e.addProperty(VSD.hasService, rr);
+        rr.addProperty(VSD.name, endpt)
+                .addProperty(VSD.endpoint, endpt)
+                .addProperty(VSD.method, HttpMethod.GET.name())
+                .addProperty(VOCALS.feature, VSD.ModelExposure);
+        if (key != null && !key.isEmpty()) {
+            Resource p = m.createResource();
+            rr.addProperty(VSD.uri_param, p);
+            p.addProperty(VSD.name, key).addProperty(VSD.index, "0");
+        }
     }
 
 
@@ -239,14 +295,19 @@ public class VocalsUtils {
         return model.createResource();
     }
 
-    public static JsonObject serialize(Param param, Class<?> c) {
+    public static JsonElement serialize(Param param, Class<?> c) {
         return serialize(param, new JsonObject(), "", c);
     }
 
-    public static JsonObject serialize(Param param2, final JsonObject obj, String name, Class<?> c) {
+    public static JsonElement serialize(Param param2, JsonElement obj, String name, Class<?> c) {
         if (c.isPrimitive() || String.class.equals(c)) {
             String n = name.isEmpty() ? param2.name() : name;
-            obj.addProperty(n, type_selector(c).getURI());
+            if (obj.isJsonObject())
+                ((JsonObject) obj).addProperty(n, type_selector(c).getURI());
+        } else if (c.isArray()) {
+            if (obj.isJsonObject()) {
+                ((JsonObject) obj).add(name, new JsonArray());
+            }
         } else {
             Arrays.stream(c.getFields())
                     .forEach(field -> serialize(param2, obj, field.getName(), field.getType()));
@@ -281,7 +342,7 @@ public class VocalsUtils {
     public static List<Endpoint> fromVocals(Model model) {
 
         try {
-            List<Endpoint> list = new ArrayList<>();
+            Set<Endpoint> set = new HashSet<>();
 
             String qstring = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("endpoints.sparql"), Charset.defaultCharset());
             String uri_query = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("uri_params.sparql"), Charset.defaultCharset());
@@ -290,7 +351,6 @@ public class VocalsUtils {
             Query q = QueryFactory.create(qstring);
             ParameterizedSparqlString parametrized_uri_query = new ParameterizedSparqlString();
             parametrized_uri_query.setCommandText(uri_query);
-
 
             ParameterizedSparqlString parametrized_body_query = new ParameterizedSparqlString();
             parametrized_body_query.setCommandText(body_query);
@@ -347,7 +407,7 @@ public class VocalsUtils {
                     params1[i] = params.get(i);
                 }
 
-                list.add(new Endpoint(
+                set.add(new Endpoint(
                         s.get("?name").toString(),
                         s.get("?endpoint").toString(),
                         HttpMethod.valueOf(s.get("?method").toString()),
@@ -355,7 +415,7 @@ public class VocalsUtils {
                         params1));
             }
 
-            return list;
+            return new ArrayList<>(set);
         } catch (IOException e) {
             return new ArrayList<>();
         }

@@ -23,19 +23,23 @@ public class VSD {
     public final static Property index;
     public final static Property body;
     public final static Property type;
+    public final static Resource ModelExposure;
+    public final static Resource ModelDeletion;
 
     static {
 
         ProcessingService = resource("ProcessingService");
         CatalogService = resource("CatalogService");
         PublishingService = resource("PublishingService");
+        ModelExposure = resource("ModelExposure");
+        ModelDeletion = resource("ModelDeletion");
         base = property("base");
         type = property("type");
         hasService = property("hasService");
         name = property("name");
         uri_param = property("uri_param");
         body_param = property("body_param");
-        body = property("body");
+        body = property("uri");
         endpoint = property("endpoint");
         method = property("method");
         params = property("params");
