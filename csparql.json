@@ -1,93 +1,74 @@
 {
   "@graph" : [ {
     "@id" : "_:b0",
-    "name" : "uri"
-  }, {
-    "@id" : "_:b1",
-    "index" : "0",
-    "name" : "query",
-    "type" : "xsd:string"
-  }, {
-    "@id" : "_:b10",
     "name" : "body"
   }, {
-    "@id" : "_:b2",
+    "@id" : "_:b1",
     "index" : "0",
     "name" : "stream",
     "type" : "xsd:string"
   }, {
-    "@id" : "_:b3",
+    "@id" : "_:b10",
     "@type" : "xsd:string",
     "index" : "0",
     "name" : "id"
   }, {
-    "@id" : "_:b4",
+    "@id" : "_:b11",
     "@type" : "array",
     "index" : "0",
     "name" : "input_streams"
   }, {
-    "@id" : "_:b5",
+    "@id" : "_:b2",
     "@type" : "xsd:string",
     "index" : "0",
     "name" : "output_stream"
   }, {
-    "@id" : "_:b6",
-    "@type" : "xsd:string",
+    "@id" : "_:b3",
     "index" : "0",
-    "name" : "body"
-  }, {
-    "@id" : "_:b7",
-    "index" : "0",
-    "name" : "stream",
+    "name" : "query",
     "type" : "xsd:string"
   }, {
-    "@id" : "_:b8",
+    "@id" : "_:b4",
     "@type" : "xsd:string",
     "index" : "1",
     "name" : "uri"
   }, {
-    "@id" : "_:b9",
+    "@id" : "_:b5",
     "index" : "0",
     "name" : "stream",
     "type" : "xsd:string"
   }, {
-    "@id" : "feature11",
+    "@id" : "_:b6",
+    "index" : "0",
+    "name" : "query",
+    "type" : "xsd:string"
+  }, {
+    "@id" : "_:b7",
+    "name" : "uri"
+  }, {
+    "@id" : "_:b8",
+    "index" : "0",
+    "name" : "stream",
+    "type" : "xsd:string"
+  }, {
+    "@id" : "_:b9",
+    "@type" : "xsd:string",
+    "index" : "0",
+    "name" : "body"
+  }, {
+    "@id" : "feature15",
+    "feature" : "http://localhost:8181/QueryGetterFeature",
+    "endpoint" : "/queries/:query",
+    "method" : "GET",
+    "name" : "QueryGetterFeature",
+    "uri_param" : "_:b6"
+  }, {
+    "@id" : "feature19",
     "feature" : "http://localhost:8181/StreamGetterFeature",
     "endpoint" : "/streams/:stream",
     "method" : "GET",
     "name" : "StreamGetterFeature",
-    "uri_param" : "_:b2"
-  }, {
-    "@id" : "feature13",
-    "feature" : "http://localhost:8181/StreamRegistrationFeature",
-    "body_param" : "_:b8",
-    "endpoint" : "/streams/:stream",
-    "method" : "POST",
-    "name" : "StreamRegistrationFeature",
-    "uri" : "{\"uri\":\"http://www.w3.org/2001/XMLSchema#string\"}",
-    "uri_param" : "_:b9"
-  }, {
-    "@id" : "feature16",
-    "feature" : "http://localhost:8181/QueryDeletionFeature",
-    "endpoint" : "/queries/:query",
-    "method" : "DELETE",
-    "name" : "QueryDeletionFeature",
     "uri_param" : "_:b1"
-  }, {
-    "@id" : "feature24",
-    "feature" : "http://localhost:8181/QueryRegistrationFeature",
-    "body_param" : [ "_:b4", "_:b5", "_:b6", "_:b3" ],
-    "endpoint" : "/queries",
-    "method" : "POST",
-    "name" : "QueryRegistrationFeature",
-    "uri" : "{\"id\":\"http://www.w3.org/2001/XMLSchema#string\",\"body\":\"http://www.w3.org/2001/XMLSchema#string\",\"output_stream\":\"http://www.w3.org/2001/XMLSchema#string\",\"input_streams\":[]}"
-  }, {
-    "@id" : "feature29",
-    "feature" : "http://localhost:8181/StreamDeletionFeature",
-    "endpoint" : "/streams/:stream",
-    "method" : "DELETE",
-    "name" : "StreamDeletionFeature",
-    "uri_param" : "_:b7"
   }, {
     "@id" : "feature35",
     "feature" : "http://localhost:8181/StreamsGetterFeature",
@@ -95,21 +76,51 @@
     "method" : "GET",
     "name" : "StreamsGetterFeature"
   }, {
+    "@id" : "feature38",
+    "feature" : "http://localhost:8181/QueriesGetterFeature",
+    "endpoint" : "/queries",
+    "method" : "GET",
+    "name" : "QueriesGetterFeature"
+  }, {
+    "@id" : "feature40",
+    "feature" : "http://localhost:8181/StreamRegistrationFeature",
+    "body_param" : "_:b4",
+    "endpoint" : "/streams/:stream",
+    "method" : "POST",
+    "name" : "StreamRegistrationFeature",
+    "uri" : "{\"uri\":\"http://www.w3.org/2001/XMLSchema#string\"}",
+    "uri_param" : "_:b5"
+  }, {
+    "@id" : "feature46",
+    "feature" : "http://localhost:8181/QueryRegistrationFeature",
+    "body_param" : [ "_:b11", "_:b2", "_:b9", "_:b10" ],
+    "endpoint" : "/queries",
+    "method" : "POST",
+    "name" : "QueryRegistrationFeature",
+    "uri" : "{\"id\":\"http://www.w3.org/2001/XMLSchema#string\",\"body\":\"http://www.w3.org/2001/XMLSchema#string\",\"output_stream\":\"http://www.w3.org/2001/XMLSchema#string\",\"input_streams\":[]}"
+  }, {
+    "@id" : "feature53",
+    "feature" : "http://localhost:8181/QueryDeletionFeature",
+    "endpoint" : "/queries/:query",
+    "method" : "DELETE",
+    "name" : "QueryDeletionFeature",
+    "uri_param" : "_:b3"
+  }, {
+    "@id" : "feature7",
+    "feature" : "http://localhost:8181/StreamDeletionFeature",
+    "endpoint" : "/streams/:stream",
+    "method" : "DELETE",
+    "name" : "StreamDeletionFeature",
+    "uri_param" : "_:b8"
+  }, {
     "@id" : "http://localhost:8181",
     "@type" : "vsd:ProcessingService",
     "base" : "http://localhost:8181",
-    "hasService" : [ "feature29", "feature35", "feature11", "feature13", "feature16", "feature24" ]
+    "hasService" : [ "feature7", "feature19", "feature15", "feature46", "feature38", "feature53", "feature40", "feature35" ]
   } ],
   "@context" : {
     "name" : {
       "@id" : "http://w3id.org/rsp/vocals-sd#name"
-    },
-    "index" : {
-      "@id" : "http://w3id.org/rsp/vocals-sd#index"
-    },
-    "type" : {
-      "@id" : "http://w3id.org/rsp/vocals-sd#type",
-      "@type" : "@id"
     },
     "method" : {
       "@id" : "http://w3id.org/rsp/vocals-sd#method"
@@ -121,15 +132,15 @@
       "@id" : "http://w3id.org/rsp/vocals#feature",
       "@type" : "@id"
     },
-    "uri_param" : {
-      "@id" : "http://w3id.org/rsp/vocals-sd#uri_param",
+    "index" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#index"
+    },
+    "type" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#type",
       "@type" : "@id"
     },
-    "uri" : {
-      "@id" : "http://w3id.org/rsp/vocals-sd#uri"
-    },
-    "body_param" : {
-      "@id" : "http://w3id.org/rsp/vocals-sd#body_param",
+    "uri_param" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#uri_param",
       "@type" : "@id"
     },
     "hasService" : {
@@ -138,6 +149,13 @@
     },
     "base" : {
       "@id" : "http://w3id.org/rsp/vocals-sd#base"
+    },
+    "uri" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#uri"
+    },
+    "body_param" : {
+      "@id" : "http://w3id.org/rsp/vocals-sd#body_param",
+      "@type" : "@id"
     },
     "frmt" : "http://www.w3.org/ns/formats/",
     "vsd" : "http://w3id.org/rsp/vocals-sd#",

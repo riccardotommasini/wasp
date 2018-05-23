@@ -1,0 +1,46 @@
+package it.polimi.sr.wasp.test.mock.model;
+
+import it.polimi.sr.wasp.server.model.Stream;
+import it.polimi.sr.wasp.server.web.Sink;
+import it.polimi.sr.wasp.server.web.Task;
+import it.polimi.sr.wasp.vocals.annotations.model.Deletable;
+import it.polimi.sr.wasp.vocals.annotations.model.Exposed;
+import it.polimi.sr.wasp.vocals.annotations.model.Key;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Observable;
+
+@NoArgsConstructor
+@Exposed(name = "queries")
+@Deletable(name = "queries")
+@AllArgsConstructor
+public class Query extends Observable implements Task {
+
+    @Key()
+    public String id;
+    public String body;
+    public Stream out_stream;
+    public List<Stream> streams;
+
+    @Override
+    public String iri() {
+        return id;
+    }
+
+    @Override
+    public void update(String message) {
+
+    }
+
+    @Override
+    public void sink(Sink sink) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + "\"" + id + "\",\"body\":\"" + body + "\"}";
+    }
+}

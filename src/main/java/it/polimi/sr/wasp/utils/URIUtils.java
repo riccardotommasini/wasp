@@ -1,0 +1,30 @@
+package it.polimi.sr.wasp.utils;
+
+import it.polimi.sr.wasp.vocals.annotations.features.RSPService;
+
+import java.lang.reflect.Method;
+
+public class URIUtils {
+
+    /* Properties */
+    public static final String SLASH = "/";
+
+    public static final String COLON = ":";
+
+    public static String addParam(String uri, String param) {
+        return uri + SLASH + COLON + param;
+    }
+
+    public static String build(Method m, String base, String param) {
+        RSPService service = m.getAnnotation(RSPService.class);
+        return base + SLASH + service + SLASH + param;
+    }
+
+    public static String cleanProtocols(String id1) {
+        return id1.replace("http://", "")
+                .replace("http://", "")
+                .replace("https://", "")
+                .replace("ws://", "")
+                .replace("wss://", "");
+    }
+}
