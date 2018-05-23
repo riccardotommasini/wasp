@@ -1,6 +1,6 @@
 package it.polimi.rsp;
 
-import it.polimi.rsp.server.Protocols;
+import it.polimi.rsp.server.enums.Protocols;
 import it.polimi.rsp.server.exceptions.DuplicateException;
 import it.polimi.rsp.server.exceptions.ResourceNotFound;
 import it.polimi.rsp.server.model.Key;

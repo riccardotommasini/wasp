@@ -3,7 +3,7 @@ package it.polimi.rsp.vocals;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import it.polimi.rsp.server.HttpMethod;
+import it.polimi.rsp.server.enums.HttpMethod;
 import it.polimi.rsp.server.model.Endpoint;
 import it.polimi.rsp.vocals.annotations.features.Feature;
 import it.polimi.rsp.vocals.annotations.features.Param;
@@ -11,6 +11,8 @@ import it.polimi.rsp.vocals.annotations.features.RSPService;
 import it.polimi.rsp.vocals.annotations.services.Catalog;
 import it.polimi.rsp.vocals.annotations.services.ProcessingService;
 import it.polimi.rsp.vocals.annotations.services.PublishingService;
+import it.polimi.rsp.vocals.vocabs.VOCALS;
+import it.polimi.rsp.vocals.vocabs.VSD;
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.rdf.api.BlankNode;
@@ -33,7 +35,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 @Log
-public class VocalsUtils {
+public class VocalsFactory {
 
     public static final Map<String, String> prefixMap = new HashMap<>();
 
@@ -344,9 +346,9 @@ public class VocalsUtils {
         try {
             Set<Endpoint> set = new HashSet<>();
 
-            String qstring = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("endpoints.sparql"), Charset.defaultCharset());
-            String uri_query = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("uri_params.sparql"), Charset.defaultCharset());
-            String body_query = IOUtils.toString(VocalsUtils.class.getClassLoader().getResourceAsStream("body.sparql"), Charset.defaultCharset());
+            String qstring = IOUtils.toString(VocalsFactory.class.getClassLoader().getResourceAsStream("endpoints.sparql"), Charset.defaultCharset());
+            String uri_query = IOUtils.toString(VocalsFactory.class.getClassLoader().getResourceAsStream("uri_params.sparql"), Charset.defaultCharset());
+            String body_query = IOUtils.toString(VocalsFactory.class.getClassLoader().getResourceAsStream("body.sparql"), Charset.defaultCharset());
 
             Query q = QueryFactory.create(qstring);
             ParameterizedSparqlString parametrized_uri_query = new ParameterizedSparqlString();

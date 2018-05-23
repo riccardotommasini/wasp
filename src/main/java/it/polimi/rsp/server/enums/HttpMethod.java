@@ -1,4 +1,4 @@
-package it.polimi.rsp.server;
+package it.polimi.rsp.server.enums;
 
 public enum HttpMethod {
 

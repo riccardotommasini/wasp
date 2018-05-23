@@ -1,4 +1,4 @@
-package it.polimi.rsp.vocals;
+package it.polimi.rsp.vocals.vocabs;
 
 import lombok.Getter;
 import org.apache.jena.rdf.model.Property;

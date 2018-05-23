@@ -6,7 +6,7 @@ import it.polimi.rsp.server.handlers.std.SGraphRequestHandler;
 import it.polimi.rsp.server.model.Endpoint;
 import it.polimi.rsp.server.model.StatusManager;
 import it.polimi.rsp.utils.Config;
-import it.polimi.rsp.vocals.VocalsUtils;
+import it.polimi.rsp.vocals.VocalsFactory;
 import lombok.extern.java.Log;
 import org.apache.jena.rdf.model.Model;
 import spark.utils.StringUtils;
@@ -26,9 +26,9 @@ public abstract class Server {
         String host = Config.getInstance().getHostName();
         String name = Config.getInstance().getServerName();
         String base = "http://" + StringUtils.removeLeadingAndTrailingSlashesFrom(host) + ":" + port + "/" + name + "/";
-        Model model = VocalsUtils.toVocals(e, name, base);
+        Model model = VocalsFactory.toVocals(e, name, base);
         StatusManager.get();
-        init(e, host, port, name, model, VocalsUtils.fromVocals(model));
+        init(e, host, port, name, model, VocalsFactory.fromVocals(model));
     }
 
     private void init(Object engine, String host, int port, String name, Model m, List<Endpoint> endpoints) {

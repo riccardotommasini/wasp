@@ -1,11 +1,8 @@
 package it.polimi.rsp.server.model;
 
-import it.polimi.rsp.server.HttpMethod;
-import it.polimi.rsp.utils.URIUtils;
+import it.polimi.rsp.server.enums.HttpMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.util.Arrays;
 
 @ToString
 @RequiredArgsConstructor

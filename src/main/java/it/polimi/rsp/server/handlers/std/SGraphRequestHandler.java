@@ -1,6 +1,6 @@
 package it.polimi.rsp.server.handlers.std;
 
-import it.polimi.rsp.server.HttpMethod;
+import it.polimi.rsp.server.enums.HttpMethod;
 import it.polimi.rsp.server.handlers.AbstractReflectiveRequestHandler;
 import it.polimi.rsp.server.model.Endpoint;
 import lombok.extern.java.Log;

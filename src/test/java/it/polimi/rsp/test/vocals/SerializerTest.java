@@ -5,7 +5,7 @@ import com.github.jsonldjava.core.RDFDataset;
 import com.github.jsonldjava.core.RDFDatasetUtils;
 import com.google.gson.Gson;
 import it.polimi.rsp.test.mock.MockEngine;
-import it.polimi.rsp.vocals.VocalsUtils;
+import it.polimi.rsp.vocals.VocalsFactory;
 import lombok.ToString;
 import org.apache.commons.rdf.api.BlankNode;
 import org.apache.commons.rdf.api.Graph;
@@ -25,7 +25,7 @@ public class SerializerTest {
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException, JsonLdError {
         MockEngine engine = new MockEngine("csparql", "http://localhost");
 
-        Graph x = VocalsUtils.toVocals2(engine.getClass());
+        Graph x = VocalsFactory.toVocals2(engine.getClass());
         RDF rdf = new SimpleRDF();
         BlankNode blankNode = rdf.createBlankNode();
 

@@ -1,6 +1,6 @@
 package it.polimi.rsp.vocals.annotations.features;
 
-import it.polimi.rsp.server.HttpMethod;
+import it.polimi.rsp.server.enums.HttpMethod;
 
 import java.lang.annotation.*;
 
