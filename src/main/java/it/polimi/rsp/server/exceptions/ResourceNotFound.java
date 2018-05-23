@@ -1,12 +1,8 @@
 package it.polimi.rsp.server.exceptions;
 
 public class ResourceNotFound extends Throwable {
-    public ResourceNotFound(String message) {
-        super(message);
+    public ResourceNotFound(String id) {
+        super("Not Found Resource with id [" + id + "]");
     }
 
-    @Override
-    public String toString() {
-        return "{}";
-    }
 }

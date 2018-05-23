@@ -1,8 +1,9 @@
 package it.polimi.rsp.server.exceptions;
 
 public class ServiceException extends RuntimeException {
-    public ServiceException(String message) {
-        super(message);
+
+    public ServiceException(Throwable cause) {
+        super(cause.getMessage(), cause);
     }
 
     @Override

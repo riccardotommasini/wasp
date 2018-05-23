@@ -2,6 +2,8 @@ package it.polimi.rsp.server.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import it.polimi.rsp.server.exceptions.DuplicateException;
+import it.polimi.rsp.server.exceptions.ResourceNotFound;
 import it.polimi.rsp.server.model.Answer;
 import it.polimi.rsp.server.model.Endpoint;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import spark.Route;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.KeyException;
 
 import static it.polimi.rsp.server.MyService.*;
 
@@ -60,7 +63,7 @@ public abstract class AbstractReflectiveRequestHandler implements RequestHandler
     public Object handle(Request request, Response response) throws Exception {
         Answer answer = process(engine, getParams(request));
         response.status(answer.getCode());
-        response.type(ContentType.APPLICATION_JSON.getMimeType());
+        response.type(ContentType.TEXT_PLAIN.getMimeType());
         return answer;
     }
 
@@ -70,7 +73,13 @@ public abstract class AbstractReflectiveRequestHandler implements RequestHandler
             Object invoke = method.invoke(engine, params);
             return new Answer(200, invoke);
         } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
-            return new Answer(HTTP_BAD_REQUEST, e.getCause().getMessage());
+            Throwable cause = e.getCause().getCause();
+            if (cause instanceof DuplicateException)
+                return new Answer(409, cause.getMessage());
+            else if (cause instanceof ResourceNotFound || cause instanceof KeyException)
+                return new Answer(404, cause.getMessage());
+            else
+                return new Answer(HTTP_BAD_REQUEST, cause.getMessage());
         }
     }
 

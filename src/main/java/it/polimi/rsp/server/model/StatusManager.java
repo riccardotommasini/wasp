@@ -34,7 +34,8 @@ public final class StatusManager {
     }
 
     public static Optional<Stream> getStream(Key k) {
-        return Optional.ofNullable(streams.get(k));
+        Stream value = streams.get(k);
+        return Optional.ofNullable(value);
     }
 
     public static Optional<Task> getTask(Key k) {
@@ -94,7 +95,7 @@ public final class StatusManager {
 
     private static void checkDuplicate(Map m, Key key) throws DuplicateException {
         if (m.containsKey(key))
-            throw new DuplicateException("Duplicate Resource: " + key.toString());
+            throw new DuplicateException(key.toString());
     }
 
     public static void remove(Key key) throws ResourceNotFound {
