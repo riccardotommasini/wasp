@@ -1,0 +1,90 @@
+{
+  "@context": {
+    "@base": "http://example.org/",
+    "vocals": "http://w3id.org/rsp/vocals#",
+    "vsd": "http://w3id.org/rsp/vocals-sd#",
+    "vprov": "http://w3id.org/rsp/vocals-prov#",
+    "dcat": "http://www.w3.org/ns/dcat",
+    "frmt": "http://www.w3.org/ns/formats/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "vsd:name": {
+      "@type": "xsd:string"
+    }
+  },
+  "@id": "http://example.org/csparql",
+  "vsd:name": "csparql",
+  "@type": "vsd:ProcessingService",
+  "vsd:lang": "vsd:CSPARQL",
+  "vsd:base": "http://localhost:8182/",
+  "vsd:hasService": [
+    {
+      "vsd:name": "Stream_Registration_Service",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/streams",
+      "vocals:feature": "vocals:StreamRegistration",
+      "vsd:body_param": "stream_uri"
+    },
+    {
+      "vsd:name": "Stream_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/streams/:id",
+      "vsd:uri_param": "id"
+    },
+    {
+      "vsd:name": "Streams_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/streams"
+    },
+    {
+      "vsd:name": "Query_Registration_Service",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/queries",
+      "vsd:body_param": "query_body",
+      "vocals:feature": "vocals:QueryRegistration"
+    },
+    {
+      "vsd:name": "Queries_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/queries"
+    },
+    {
+      "vsd:name": "Query_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/queries/:id",
+      "vsd:uri_param": "id"
+    },
+    {
+      "vsd:name": "Query_Observer_Service",
+      "vsd:method": "GET",
+      "vsd:endpoint": "/queries/:id/:obs",
+      "vsd:uri_param": [
+        "id",
+        "obs"
+      ]
+    },
+    {
+      "vsd:name": "Custom_Service",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/custom/:id",
+      "vocals:feature": ":CustomFeature",
+      "vsd:uri_param": "id",
+      "vsd:body_param": "body"
+    },
+    {
+      "vsd:name": "Custom_Service2",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/custom2/:id",
+      "vocals:feature": ":CustomFeature2",
+      "vsd:uri_param": "id",
+      "vsd:body_param": "body"
+    },
+    {
+      "vsd:name": "Custom_Service3",
+      "vsd:method": "POST",
+      "vsd:endpoint": "/custom3/:id",
+      "vocals:feature": ":CustomFeature3",
+      "vsd:uri_param": "id",
+      "vsd:body_param": "body"
+    }
+  ]
+}
