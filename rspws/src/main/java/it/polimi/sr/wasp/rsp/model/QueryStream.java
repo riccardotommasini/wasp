@@ -3,21 +3,15 @@ package it.polimi.sr.wasp.rsp.model;
 import com.google.gson.Gson;
 import it.polimi.sr.wasp.server.model.Stream;
 import it.polimi.sr.wasp.server.web.Sink;
-import it.polimi.sr.wasp.vocals.annotations.model.Deletable;
-import it.polimi.sr.wasp.vocals.annotations.model.Exposed;
-import it.polimi.sr.wasp.vocals.annotations.model.Key;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 
-@Exposed(name = "queries")
-@Deletable(name = "streams")
 @RequiredArgsConstructor
 public class QueryStream implements Stream{
 
-    @Key()
     private final String id;
     private final String uri;
 

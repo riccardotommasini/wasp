@@ -5,7 +5,6 @@ import it.polimi.sr.wasp.server.web.Proxy;
 import it.polimi.sr.wasp.server.web.ProxyTask;
 import it.polimi.sr.wasp.server.web.Sink;
 import it.polimi.sr.wasp.server.web.Source;
-import it.polimi.sr.wasp.vocals.annotations.model.Key;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +15,6 @@ import java.util.Observable;
 @AllArgsConstructor
 public class Query extends Observable implements ProxyTask {
 
-    @Key()
     public String id;
     public String body;
     public Stream out_stream;

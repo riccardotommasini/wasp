@@ -1,11 +1,11 @@
 package it.polimi.test;
 
+import it.polimi.deib.rsp.vocals.jena.VocalsFactoryJena;
 import it.polimi.sr.wasp.rsp.RSPEngine;
 import it.polimi.sr.wasp.rsp.RSPServer;
 import it.polimi.sr.wasp.rsp.model.InStream;
 import it.polimi.sr.wasp.rsp.model.Query;
 import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.vocals.VocalsFactoryJena;
 import lombok.extern.java.Log;
 import org.apache.jena.rdf.model.Model;
 
@@ -15,6 +15,8 @@ import java.io.IOException;
 
 @Log
 public class FakeEngine extends RSPEngine {
+
+    VocalsFactoryJena factoryJena = new VocalsFactoryJena();
 
     public FakeEngine(String name, String base) {
         super(name, base);
@@ -44,8 +46,6 @@ public class FakeEngine extends RSPEngine {
         public static void main(String[] args) throws IOException {
             if (args.length > 0) {
                 RSPEngine csparql = new FakeEngine("fake", "http://localhost:8181/fake");
-                Model model = VocalsFactoryJena.toVocals(RSPEngine.class);
-                model.write(new FileOutputStream(new File("./" + csparql.getName() + ".json")), "JSON-LD");
                 new Main().start(csparql, args[0]);
             }
         }

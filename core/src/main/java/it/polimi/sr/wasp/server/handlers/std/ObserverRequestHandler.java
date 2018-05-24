@@ -2,7 +2,8 @@ package it.polimi.sr.wasp.server.handlers.std;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import it.polimi.sr.wasp.server.enums.HttpMethod;
+import it.polimi.rsp.vocals.core.annotations.Endpoint;
+import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.sr.wasp.server.enums.Protocols;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;

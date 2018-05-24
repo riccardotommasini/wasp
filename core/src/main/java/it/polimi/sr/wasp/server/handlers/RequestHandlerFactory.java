@@ -1,14 +1,14 @@
 package it.polimi.sr.wasp.server.handlers;
 
-import it.polimi.sr.wasp.server.model.Endpoint;
+import it.polimi.rsp.vocals.core.annotations.Endpoint;
+import it.polimi.rsp.vocals.core.annotations.features.Feature;
+import it.polimi.rsp.vocals.core.annotations.model.Deletable;
+import it.polimi.rsp.vocals.core.annotations.model.Exposed;
 import it.polimi.sr.wasp.server.model.KeyFactory;
 import it.polimi.sr.wasp.server.model.StatusManager;
 import it.polimi.sr.wasp.server.model.Stream;
 import it.polimi.sr.wasp.server.web.Proxy;
 import it.polimi.sr.wasp.server.web.Task;
-import it.polimi.sr.wasp.vocals.annotations.features.Feature;
-import it.polimi.sr.wasp.vocals.annotations.model.Deletable;
-import it.polimi.sr.wasp.vocals.annotations.model.Exposed;
 import it.polimi.sr.wasp.server.model.Key;
 import lombok.extern.java.Log;
 import spark.Request;

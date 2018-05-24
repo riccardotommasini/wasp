@@ -45,5 +45,10 @@
             <artifactId>jena-elephas-io</artifactId>
             <version>3.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>it.deib.rsp.vocals</groupId>
+            <artifactId>vocals-jena</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

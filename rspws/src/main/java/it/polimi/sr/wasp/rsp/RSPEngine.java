@@ -1,5 +1,6 @@
 package it.polimi.sr.wasp.rsp;
 
+import it.polimi.rsp.vocals.core.annotations.services.ProcessingService;
 import it.polimi.sr.wasp.rsp.features.queries.QueriesGetterFeature;
 import it.polimi.sr.wasp.rsp.features.queries.QueryDeletionFeature;
 import it.polimi.sr.wasp.rsp.features.queries.QueryGetterFeature;
@@ -20,7 +21,6 @@ import it.polimi.sr.wasp.server.model.StatusManager;
 import it.polimi.sr.wasp.server.model.Stream;
 import it.polimi.sr.wasp.server.web.*;
 import it.polimi.sr.wasp.utils.URIUtils;
-import it.polimi.sr.wasp.vocals.annotations.services.ProcessingService;
 import lombok.Getter;
 import lombok.extern.java.Log;
 

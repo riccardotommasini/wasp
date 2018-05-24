@@ -1,7 +1,8 @@
 package it.polimi.sr.wasp.server;
 
+import it.polimi.rsp.vocals.core.annotations.Endpoint;
+import it.polimi.rsp.vocals.core.annotations.VocalsStub;
 import it.polimi.sr.wasp.server.handlers.RequestHandlerFactory;
-import it.polimi.sr.wasp.server.model.Endpoint;
 import lombok.extern.java.Log;
 import org.apache.jena.rdf.model.Model;
 
@@ -13,7 +14,7 @@ import static it.polimi.sr.wasp.server.MyService.path;
 @Log
 public abstract class Server {
 
-    protected Model graph;
+    protected VocalsStub stub;
 
     protected void init(Object engine, String host, int port, String name, List<Endpoint> endpoints) {
         ingnite(host, name, port);

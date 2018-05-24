@@ -137,6 +137,11 @@
             <artifactId>jsonld-java</artifactId>
             <version>0.10.0</version>
         </dependency>
+        <dependency>
+            <groupId>it.deib.rsp.vocals</groupId>
+            <artifactId>vocals-core</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

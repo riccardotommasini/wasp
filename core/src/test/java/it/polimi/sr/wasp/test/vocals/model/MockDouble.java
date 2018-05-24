@@ -1,7 +1,7 @@
 package it.polimi.sr.wasp.test.vocals.model;
 
+import it.polimi.rsp.vocals.core.annotations.services.ProcessingService;
 import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.vocals.annotations.services.ProcessingService;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

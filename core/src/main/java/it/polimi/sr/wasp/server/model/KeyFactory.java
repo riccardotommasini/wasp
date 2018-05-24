@@ -51,7 +51,7 @@ public class KeyFactory {
     public static Key create2(Object o) {
         return keys.computeIfAbsent(o, a ->
                 Arrays.stream(o.getClass().getFields())
-                        .filter(field -> field.isAnnotationPresent(it.polimi.sr.wasp.vocals.annotations.model.Key.class))
+                        .filter(field -> field.isAnnotationPresent(it.polimi.rsp.vocals.core.annotations.model.Key.class))
                         .map(field -> {
                             try {
                                 return field.get(o);
@@ -64,7 +64,7 @@ public class KeyFactory {
     }
 
     public static Key remove(Object s) throws KeyException {
-        if(s == null) {
+        if (s == null) {
             throw new KeyException("null key");
         }
 

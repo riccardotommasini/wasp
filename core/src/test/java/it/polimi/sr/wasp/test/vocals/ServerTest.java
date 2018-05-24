@@ -1,10 +1,10 @@
 package it.polimi.sr.wasp.test.vocals;
 
+import it.polimi.rsp.vocals.core.annotations.Endpoint;
+import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.sr.wasp.server.Server;
-import it.polimi.sr.wasp.server.enums.HttpMethod;
 import it.polimi.sr.wasp.server.handlers.AbstractReflectiveRequestHandler;
 import it.polimi.sr.wasp.server.model.Answer;
-import it.polimi.sr.wasp.server.model.Endpoint;
 import it.polimi.sr.wasp.model.TestStream;
 import it.polimi.sr.wasp.test.vocals.model.MockDouble;
 import lombok.AllArgsConstructor;

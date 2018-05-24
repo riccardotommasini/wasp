@@ -1,7 +1,6 @@
 package it.polimi.sr.wasp.model;
 
 import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.vocals.annotations.model.Key;
 import lombok.extern.java.Log;
 
 import java.util.Observable;
@@ -10,7 +9,6 @@ import java.util.Observer;
 @Log
 public class TestStream extends Observable implements Stream {
 
-    @Key()
     public String id;
     public String uri;
 

@@ -1,6 +1,7 @@
 package it.polimi.sr.wasp.utils;
 
-import it.polimi.sr.wasp.vocals.annotations.features.RSPService;
+
+import it.polimi.rsp.vocals.core.annotations.features.RSPService;
 
 import java.lang.reflect.Method;
 
