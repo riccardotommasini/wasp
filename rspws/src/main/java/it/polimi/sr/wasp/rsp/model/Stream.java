@@ -1,7 +1,6 @@
 package it.polimi.sr.wasp.rsp.model;
 
 import it.polimi.sr.wasp.server.model.concept.*;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -11,19 +10,19 @@ import java.util.List;
 public class Stream implements Channel, Named {
 
     public String id;
-    public String uri;
+    public String source;
 
     protected List<Sink> sinks = new ArrayList<>();
     protected List<Task> tasks = new ArrayList<>();
 
     public Stream(String id, String uri) {
         this.id = id;
-        this.uri = uri;
+        this.source = uri;
     }
 
     @Override
     public String toString() {
-        return "{\"stream\": \"" + id + "\", \"uri\": \"" + uri + "\"}";
+        return "{\"stream\": \"" + id + "\", \"source\": \"" + source + "\"}";
     }
 
 
@@ -58,6 +57,6 @@ public class Stream implements Channel, Named {
 
     @Override
     public String iri() {
-        return uri;
+        return source;
     }
 }

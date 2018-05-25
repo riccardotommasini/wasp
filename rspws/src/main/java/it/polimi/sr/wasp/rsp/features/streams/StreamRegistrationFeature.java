@@ -12,7 +12,7 @@ public interface StreamRegistrationFeature {
 
     @RSPService(endpoint = "/streams", method = HttpMethod.POST)
     Channel register_stream(@Param(name = "stream", uri = true) String id,
-                            @Param(name = "uri") String uri);
+                            @Param(name = "source") String source);
 
 }
 

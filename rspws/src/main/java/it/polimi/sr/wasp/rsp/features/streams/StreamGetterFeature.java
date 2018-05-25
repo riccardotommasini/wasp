@@ -10,6 +10,6 @@ import it.polimi.sr.wasp.rsp.model.Stream;
 public interface StreamGetterFeature {
 
     @RSPService(endpoint = "/streams")
-    Stream get_stream(@Param(name = "stream", uri = true) String id);
+        Stream get_stream(@Param(name = "stream", uri = true) String id);
 
 }

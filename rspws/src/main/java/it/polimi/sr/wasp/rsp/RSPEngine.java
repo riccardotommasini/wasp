@@ -1,5 +1,7 @@
 package it.polimi.sr.wasp.rsp;
 
+import it.polimi.rsp.vocals.core.annotations.VocalsFactory;
+import it.polimi.rsp.vocals.core.annotations.VocalsStreamStub;
 import it.polimi.rsp.vocals.core.annotations.services.ProcessingService;
 import it.polimi.sr.wasp.rsp.features.queries.QueriesGetterFeature;
 import it.polimi.sr.wasp.rsp.features.queries.QueryDeletionFeature;
@@ -26,6 +28,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 
 import java.security.KeyException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -48,18 +51,24 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     public Query register_query(QueryBody body) {
         try {
 
-            Key k = createQueryKey(body.id);
-
-            Query query = handleInternalQuery(getQueryUri(body.id), body.body, getStreamUri(body.id), body.output_stream);
-
+            List<Channel> streams = new ArrayList<>();
             for (String s : body.input_streams) {
                 Channel channel = StatusManager
                         .getStream(getStreamKey(s))
                         .orElseGet(() -> register_vocals_stream(s, s));
-                channel.apply(query);
-                query.add(channel);
+                streams.add(channel);
                 //TODO commit channel again?
             }
+
+            Key k = createQueryKey(body.id);
+
+            Query query = handleInternalQuery(getQueryUri(body.id), body.body, getStreamUri(body.id), body.output_stream);
+
+            for (Channel channel : streams) {
+                channel.apply(query);
+                query.add(channel);
+            }
+
 
             Channel out = query.out();
 
@@ -73,9 +82,6 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         }
     }
 
-    private Channel register_vocals_stream(String s, String s1) {
-        return register_stream(s, "ws://" + URIUtils.cleanProtocols(s1));
-    }
 
     @Override
     public List<Query> get_queries() {
@@ -90,16 +96,14 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
                 .orElseThrow(() -> new ServiceException(new ResourceNotFound(id)));
     }
 
-    @Override
-    public Channel register_stream(String id, String uri_source) {
+    private Channel _register_stream(String iri, String uri_source) {
         try {
-            String iri = getStreamUri(URIUtils.cleanProtocols(id));
             Source source = new WebSocketSource(uri_source);
             Channel channel = handleInternalStream(iri, uri_source);
 
             source.add(channel);
 
-            //TODO uri creation structured with vocals
+            //TODO source creation structured with vocals
             Key k = KeyFactory.create(iri);
             StatusManager.commit(k, channel);
             Key k1 = KeyFactory.create(k);
@@ -109,6 +113,17 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         } catch (DuplicateException e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public Channel register_stream(String id, String uri_source) {
+        String iri = getStreamUri(URIUtils.cleanProtocols(id));
+        return _register_stream(iri, uri_source);
+    }
+
+    public Channel register_vocals_stream(String s, String s1) {
+        VocalsStreamStub fetch = VocalsFactory.get().fetch(s1);
+        return _register_stream(fetch.uri, fetch.source);
     }
 
     @Override

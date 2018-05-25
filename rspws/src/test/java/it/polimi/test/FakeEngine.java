@@ -30,13 +30,13 @@ public class FakeEngine extends RSPEngine {
 
     @Log
     private static class Main extends RSPServer {
-        public Main() {
+        public Main() throws IOException {
             super(new VocalsFactoryRDF4J());
         }
 
         public static void main(String[] args) throws IOException {
             if (args.length > 0) {
-                RSPEngine csparql = new FakeEngine("fake", "http://localhost:8181/fake");
+                RSPEngine csparql = new FakeEngine("fake", "http://localhost:8181");
                 new Main().start(csparql, args[0]);
             }
         }

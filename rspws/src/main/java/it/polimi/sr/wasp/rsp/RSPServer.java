@@ -4,6 +4,7 @@ import it.polimi.rsp.vocals.core.annotations.VocalsFactory;
 import it.polimi.sr.wasp.server.Server;
 import it.polimi.sr.wasp.server.handlers.std.ESDRequestHandler;
 import it.polimi.sr.wasp.server.handlers.std.ObserverRequestHandler;
+import it.polimi.sr.wasp.server.handlers.std.ObserversHandler;
 import it.polimi.sr.wasp.utils.Config;
 
 import static spark.Spark.path;
@@ -28,6 +29,7 @@ public abstract class RSPServer extends Server {
     protected void ingnite(String host, String name, int port) {
         port(port);
         path(name, () -> new ESDRequestHandler(stub).call());
+        path(name, () -> new ObserversHandler().call());
         path(name, () -> new ObserverRequestHandler(name, host, port).call());
     }
 }
