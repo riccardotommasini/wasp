@@ -1,19 +1,17 @@
 package it.polimi.sr.wasp.rsp.model;
 
-import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.server.web.Task;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Task;
 
 public class EmptyTask implements Task {
 
     @Override
-    public String iri() {
+    public Channel out() {
         return null;
     }
-
 
     @Override
-    public Stream stream() {
-        return null;
+    public Channel[] in() {
+        return new Channel[0];
     }
-
 }

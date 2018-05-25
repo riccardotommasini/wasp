@@ -1,53 +1,51 @@
 package it.polimi.test;
 
-import it.polimi.deib.rsp.vocals.jena.VocalsFactoryJena;
+import it.polimi.deib.rsp.vocals.rdf4j.VocalsFactoryRDF4J;
 import it.polimi.sr.wasp.rsp.RSPEngine;
 import it.polimi.sr.wasp.rsp.RSPServer;
-import it.polimi.sr.wasp.rsp.model.InStream;
 import it.polimi.sr.wasp.rsp.model.Query;
-import it.polimi.sr.wasp.server.model.Stream;
+import it.polimi.sr.wasp.rsp.model.Stream;
+import it.polimi.sr.wasp.server.model.concept.Channel;
 import lombok.extern.java.Log;
-import org.apache.jena.rdf.model.Model;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Log
 public class FakeEngine extends RSPEngine {
-
-    VocalsFactoryJena factoryJena = new VocalsFactoryJena();
 
     public FakeEngine(String name, String base) {
         super(name, base);
     }
 
     @Override
-    protected Query handleInternalQuery(String queryUri, String body) {
-        return new FakeQuery(queryUri, body);
+    protected Query handleInternalQuery(String queryUri, String body, String uri, String source) {
+        return new FakeQuery(queryUri, body, uri, source);
     }
 
     @Override
-    protected Stream handleInternalStream(String id, String body) {
-        return new InStream(id, body);
+    protected Channel handleInternalStream(String id, String body) {
+        return new Stream(id, body);
     }
 
-    private class FakeQuery extends Query {
-        private final String uri;
-
-        public FakeQuery(String uri, String body) {
-            this.uri = uri;
-            this.body = body;
-        }
-    }
 
     @Log
     private static class Main extends RSPServer {
+        public Main() {
+            super(new VocalsFactoryRDF4J());
+        }
+
         public static void main(String[] args) throws IOException {
             if (args.length > 0) {
                 RSPEngine csparql = new FakeEngine("fake", "http://localhost:8181/fake");
                 new Main().start(csparql, args[0]);
             }
+        }
+    }
+
+    private class FakeQuery extends Query {
+        public FakeQuery(String queryUri, String body, String uri, String source) {
+            super(queryUri, body);
+            this.out = new Stream(uri, source);
         }
     }
 }

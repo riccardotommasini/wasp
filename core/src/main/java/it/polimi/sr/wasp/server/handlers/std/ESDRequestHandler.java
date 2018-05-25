@@ -13,25 +13,26 @@ import java.io.UnsupportedEncodingException;
 
 import static spark.Spark.get;
 
+
 @Log
-public class SGraphRequestHandler extends AbstractReflectiveRequestHandler {
+public class ESDRequestHandler extends AbstractReflectiveRequestHandler {
 
     private VocalsStub model;
 
-    public SGraphRequestHandler(VocalsStub m) {
-        super(null, new Endpoint("sgraph", "", HttpMethod.GET, "sgraph", new Endpoint.Par[]{}));
+    public ESDRequestHandler(VocalsStub m) {
+        super(null, new Endpoint("esd", "", HttpMethod.GET, "esd", new Endpoint.Par[]{}));
         this.model = m;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        response.type(ContentType.APPLICATION_JSON.getMimeType());
+        response.type();
         return getDescription(model);
     }
 
     @Override
     public void call() {
-        log.info("SGRAPH Endpoint GET: [" + endpoint.uri + "] Ready");
+        log.info("ESD Endpoint GET: [" + endpoint.uri + "] Ready");
         get(endpoint.uri, ContentType.APPLICATION_JSON.getMimeType(), this);
     }
 

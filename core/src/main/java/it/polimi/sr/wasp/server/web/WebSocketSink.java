@@ -2,6 +2,9 @@ package it.polimi.sr.wasp.server.web;
 
 import com.google.gson.Gson;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Sink;
+import it.polimi.sr.wasp.server.model.concept.Source;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.eclipse.jetty.websocket.api.Session;
@@ -23,7 +26,7 @@ import java.util.Set;
 public class WebSocketSink implements Sink, RequestHandler {
 
     private static final Gson gson = new Gson();
-    private final String path, url;
+    private final String url;
     private final Service http;
     private final Set<Session> sessions = new HashSet<>();
 
@@ -58,14 +61,19 @@ public class WebSocketSink implements Sink, RequestHandler {
     }
 
     @Override
-    public void message(Object arg) {
-        broadcast(arg);
+    public void await(Source s, String m) {
+        broadcast(m);
+    }
+
+    @Override
+    public void await(Channel c, String m) {
+        broadcast(m);
     }
 
     @Override
     public void call() {
         log.info(url);
-        http.webSocket(path, this);
+        http.webSocket(url, this);
         http.init();
     }
 

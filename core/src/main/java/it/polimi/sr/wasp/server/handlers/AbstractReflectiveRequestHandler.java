@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
-import it.polimi.sr.wasp.server.model.Answer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;

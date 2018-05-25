@@ -1,7 +1,7 @@
 package it.polimi.sr.wasp.test.vocals.model;
 
 import it.polimi.rsp.vocals.core.annotations.services.ProcessingService;
-import it.polimi.sr.wasp.server.model.Stream;
+import it.polimi.sr.wasp.server.model.concept.Channel;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -13,12 +13,12 @@ public class MockDouble implements StreamRegistrationAndStreamsGetterFeatures {
     String name, base;
 
     @Override
-    public List<Stream> get_streams() {
+    public List<Channel> get_streams() {
         return null;
     }
 
     @Override
-    public Stream register_stream(String id, String uri) {
+    public Channel register_stream(String id, String uri) {
         return null;
     }
 }

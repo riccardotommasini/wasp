@@ -1,7 +1,9 @@
 package it.polimi.sr.wasp.server.web;
 
-import it.polimi.sr.wasp.server.model.Stream;
-import lombok.extern.java.Log;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.concept.Stoppable;
+import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -12,22 +14,33 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import java.io.IOException;
 import java.net.URI;
 
-@Log
+@Log4j2
 @WebSocket
-public class WebSocketSource implements Source {
 
-    private SourceTask task;
-    private URI uri;
+public class WebSocketSource implements Source, Stoppable {
+
+    private Channel channel;
+    private URI source;
     private WebSocketClient client = new WebSocketClient();
 
-    public WebSocketSource(Stream source) {
-        this.uri = URI.create(source.iri());
+    public WebSocketSource(Channel source, String uri) {
+        this.channel = source;
+        this.source = URI.create(uri);
+        init();
+    }
+
+    private void init() {
         try {
             client.start();
-            client.connect(this, this.uri);
+            client.connect(this, this.source);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+    }
+
+    public WebSocketSource(String uri) {
+        this.source = URI.create(uri);
     }
 
     @OnWebSocketConnect
@@ -39,14 +52,18 @@ public class WebSocketSource implements Source {
     }
 
     @OnWebSocketMessage
+    //TODO this is the method that represents yield
     public void message(Session session, String message) throws IOException {
-        log.info(message);
-        task.update(message);
+        log.debug(message);
+        channel.await(this, message);
     }
 
     @Override
-    public void task(SourceTask t) {
-        this.task = t;
+    public Channel add(Channel t) {
+        if (client.isStopped())
+            init();
+        this.channel = t;
+        return t;
     }
 
     @Override
@@ -56,6 +73,11 @@ public class WebSocketSource implements Source {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void yeild(String task) {
+        channel.await(this, task);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package it.polimi.sr.wasp.server.model;
+package it.polimi.sr.wasp.server.model.persist;
 
 public interface Key {
 

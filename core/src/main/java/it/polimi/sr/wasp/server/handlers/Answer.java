@@ -1,4 +1,4 @@
-package it.polimi.sr.wasp.server.model;
+package it.polimi.sr.wasp.server.handlers;
 
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;

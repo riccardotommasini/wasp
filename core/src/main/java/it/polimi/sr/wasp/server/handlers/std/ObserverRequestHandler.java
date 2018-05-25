@@ -6,9 +6,12 @@ import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.sr.wasp.server.enums.Protocols;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
+import it.polimi.sr.wasp.server.handlers.Answer;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
-import it.polimi.sr.wasp.server.model.*;
-import it.polimi.sr.wasp.server.web.FlushStreamTask;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.persist.Key;
+import it.polimi.sr.wasp.server.model.persist.KeyFactory;
+import it.polimi.sr.wasp.server.model.persist.StatusManager;
 import it.polimi.sr.wasp.server.web.WebSocketSink;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.extern.java.Log;
@@ -36,7 +39,6 @@ public class ObserverRequestHandler implements RequestHandler {
 
     private static final Gson gson = new Gson();
     private static final int HTTP_BAD_REQUEST = 400;
-    private final Service http;
     private static final Endpoint endpoint = new Endpoint("observers", "/observers/:stream", HttpMethod.POST, "observers", new Endpoint.Par[]{
             new Endpoint.Par("stream", 0, true, String.class),
             new Endpoint.Par("protocol", 1, false, Protocols.class)
@@ -44,13 +46,21 @@ public class ObserverRequestHandler implements RequestHandler {
 
     private final String host;
     private final int port;
+    private final String base_ws;
+    private final String base_query;
+    private int wsport;
     private String name;
+    private String base_stream;
 
     public ObserverRequestHandler(String name, String host, int port) {
         this.name = StringUtils.removeLeadingAndTrailingSlashesFrom(name);
         this.host = StringUtils.removeLeadingAndTrailingSlashesFrom(host);
         this.port = port;
-        this.http = Service.ignite().port(port).threadPool(10);
+        this.wsport = port;
+        String s = this.host + URIUtils.COLON + this.port + URIUtils.SLASH + this.name + URIUtils.SLASH;
+        base_stream = s + "streams" + URIUtils.SLASH;
+        base_query = s + "queries" + URIUtils.SLASH;
+        base_ws = URIUtils.SLASH + this.name + URIUtils.SLASH + "streams" + URIUtils.SLASH;
     }
 
     @Override
@@ -64,37 +74,39 @@ public class ObserverRequestHandler implements RequestHandler {
         final String stream = request.params(endpoint.params[0].name);
         JsonObject jsonObject = gson.fromJson(request.body(), JsonObject.class);
         Protocols protocol = Protocols.valueOf(jsonObject.get(endpoint.params[1].name).getAsString().toUpperCase(Locale.ENGLISH));
-        Key k = KeyFactory.create(stream);
-        Optional<Answer> answer = StatusManager.getStream(k).map(s -> {
-            try {
-                String path = URIUtils.SLASH + name + URIUtils.SLASH + "streams" + URIUtils.SLASH + stream;
-                String url = "ws://" + host + URIUtils.COLON + port + path;
-                WebSocketSink observer = new WebSocketSink(path, url, http);
-                FlushStreamTask t = new FlushStreamTask(s, observer);
-                //TODO there is any task associated with this stream?
-                Key key = KeyFactory.create(k);
-                StatusManager.commit(key, t);
-                switch (protocol) {
-                    case EVENTS:
-                    case WEBSOCKET:
-                        http.path(name, observer::call);
-                        break;
-                    case MTTQ:
-                    case HTTP:
-                    default:
-                }
-                return new Answer(200, "Observer Successfully Created at [ " + url + "]");
-            } catch (DuplicateException e) {
-                e.printStackTrace();
-                return new Answer(409, "Duplicate Resource " + k);
+        String surl = base_stream + stream;
+        String qurl = base_query + stream;
+        Key k;
+        return StatusManager.getStream(k = KeyFactory.get2("http://" + qurl)).map(Optional::of)
+                .orElse(StatusManager.getStream(KeyFactory.create("http://" + surl)))
+                .map(s -> {
+                    try {
+                        String path = base_ws + stream + "/observers/" + Math.abs(k.hashCode());
+                        switch (protocol) {
+                            case EVENTS:
+                            case WEBSOCKET:
+                                startWebSocket(s, k, path, this.wsport = wsport + 1);
+                                break;
+                            case MTTQ:
+                            case HTTP:
+                            default:
+                        }
+                        return new Answer(200, "Observer Successfully Created at [ " + path + "] port [" + this.wsport + "]");
+                    } catch (DuplicateException e) {
+                        e.printStackTrace();
+                        return new Answer(409, "Duplicate Resource " + stream);
+                    }
 
-            }
+                }).orElse(new Answer(HTTP_BAD_REQUEST, "Observer NOT Successfully Created"));
+    }
 
-
-        });
-
-        return answer.orElse(new Answer(HTTP_BAD_REQUEST, "Observer NOT Successfully Created"));
-
+    private void startWebSocket(Channel s, Key key, String path, int p) throws DuplicateException {
+        log.info("New Service Instance opened on port [" + p + "]");
+        Service ws = Service.ignite().port(p).threadPool(4);
+        WebSocketSink observer = new WebSocketSink(path, ws);
+        s.add(observer);
+        StatusManager.commit(KeyFactory.create(key), observer);
+        ws.path(name, observer::call);
     }
 
     private class ObserverModel {

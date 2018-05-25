@@ -1,8 +1,8 @@
 package it.polimi.sr.wasp;
 
-import it.polimi.sr.wasp.server.model.Key;
-import it.polimi.sr.wasp.server.model.KeyFactory;
-import it.polimi.sr.wasp.server.model.Stream;
+import it.polimi.sr.wasp.server.model.persist.Key;
+import it.polimi.sr.wasp.server.model.persist.KeyFactory;
+import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.model.TestStream;
 import org.junit.Test;
 
@@ -16,10 +16,10 @@ public class KeyTest {
     @Test
     public void subkeys() {
 
-        Map<Key, Stream> streams = new HashMap<>();
+        Map<Key, Channel> streams = new HashMap<>();
 
-        Stream s = new TestStream("s1", "s1");
-        Stream s2 = new TestStream("s2", "s2");
+        Channel s = new TestStream("s1", "s1");
+        Channel s2 = new TestStream("s2", "s2");
 
         Key k = KeyFactory.create(s.iri());
 

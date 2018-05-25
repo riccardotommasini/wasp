@@ -9,17 +9,18 @@ import it.polimi.sr.wasp.rsp.features.streams.StreamDeletionFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamGetterFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamRegistrationFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamsGetterFeature;
-import it.polimi.sr.wasp.rsp.model.InStream;
 import it.polimi.sr.wasp.rsp.model.Query;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
+import it.polimi.sr.wasp.rsp.model.Stream;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
 import it.polimi.sr.wasp.server.exceptions.ServiceException;
-import it.polimi.sr.wasp.server.model.Key;
-import it.polimi.sr.wasp.server.model.KeyFactory;
-import it.polimi.sr.wasp.server.model.StatusManager;
-import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.server.web.*;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.persist.Key;
+import it.polimi.sr.wasp.server.model.persist.KeyFactory;
+import it.polimi.sr.wasp.server.model.persist.StatusManager;
+import it.polimi.sr.wasp.server.web.WebSocketSource;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.Getter;
 import lombok.extern.java.Log;
@@ -40,7 +41,7 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
 
     public RSPEngine(String name, String base) {
         this.name = name;
-        this.base = base;
+        this.base = base.endsWith(URIUtils.SLASH) ? base + name : base + URIUtils.SLASH + name;
     }
 
     @Override
@@ -48,39 +49,32 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         try {
 
             Key k = createQueryKey(body.id);
-            Key subkey = KeyFactory.create(k);
 
-            //Retrieve the streams and create if unavailable, need vocals description
+            Query query = handleInternalQuery(getQueryUri(body.id), body.body, getStreamUri(body.id), body.output_stream);
+
             for (String s : body.input_streams) {
-                StatusManager
+                Channel channel = StatusManager
                         .getStream(getStreamKey(s))
-                        .orElseGet(() -> register_stream(s, s));
+                        .orElseGet(() -> register_vocals_stream(s, s));
+                channel.apply(query);
+                query.add(channel);
+                //TODO commit channel again?
             }
 
-            Query query = handleInternalQuery(getQueryUri(body.id), body.body);
+            Channel out = query.out();
 
-            //Since we want to consumer the output of this query as a stream; We attach an internal sink and we connect it
-            // using a proxy
+            StatusManager.commit(KeyFactory.create(k), out);
 
-            Stream out = new InStream(getStreamUri(body.id), body.output_stream);
-
-            //These can be deleted using subkey as key
-
-            //Sink formatter1 = query.sink();
-            // Source formatter2 = query.source();
-            Proxy proxy = query.proxy();
-
-            FeedStreamTask feedtask = new FeedStreamTask(out, proxy);
-            FlushStreamTask flushtask = new FlushStreamTask(out, proxy);
-
-            StatusManager.commit(subkey, proxy, feedtask, flushtask, out);
-
-            //Create the query and commit it as task
+            //Create the query and commit it as add
             return (Query) StatusManager.commit(k, query);
 
         } catch (DuplicateException e) {
             throw new ServiceException(e);
         }
+    }
+
+    private Channel register_vocals_stream(String s, String s1) {
+        return register_stream(s, "ws://" + URIUtils.cleanProtocols(s1));
     }
 
     @Override
@@ -97,41 +91,43 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     }
 
     @Override
-    public Stream register_stream(String id1, String cc) {
+    public Channel register_stream(String id, String uri_source) {
         try {
-            String id = URIUtils.cleanProtocols(id1);
-            Stream stream = handleInternalStream(id, cc);
-            Source source = SourceSinkFactory.webSocket(stream);
-            FeedStreamTask task = new FeedStreamTask(stream, source);
+            String iri = getStreamUri(URIUtils.cleanProtocols(id));
+            Source source = new WebSocketSource(uri_source);
+            Channel channel = handleInternalStream(iri, uri_source);
+
+            source.add(channel);
 
             //TODO uri creation structured with vocals
-            Key k = createStreamKey(id);
-            StatusManager.commit(k, stream);
+            Key k = KeyFactory.create(iri);
+            StatusManager.commit(k, channel);
             Key k1 = KeyFactory.create(k);
-            StatusManager.commit(k1, source, task);
-            return stream;
+            StatusManager.commit(k1, source);
+
+            return channel;
         } catch (DuplicateException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public InStream get_stream(String id) {
-        return (InStream) StatusManager.getStream(getStreamKey(id))
+    public Stream get_stream(String id) {
+        return (Stream) StatusManager.getStream(getStreamKey(id))
                 .orElseGet(() -> StatusManager.getStream(KeyFactory.get(getQueryKey(id)))
                         .orElseThrow(() -> new ServiceException(new ResourceNotFound(id))));
     }
 
     @Override
-    public List<InStream> get_streams() {
-        Collection<Stream> values = StatusManager.streams.values();
-        return values.stream().map(InStream.class::cast).collect(Collectors.toList());
+    public List<Stream> get_streams() {
+        Collection<Channel> values = StatusManager.streams.values();
+        return values.stream().map(Stream.class::cast).collect(Collectors.toList());
     }
 
     @Override
-    public Stream delete_stream(String id) {
+    public Channel delete_stream(String id) {
         Key streamKey = getStreamKey(id);
-        return deleteResource(id, streamKey, StatusManager.getStream(streamKey), Stream.class);
+        return deleteResource(id, streamKey, StatusManager.getStream(streamKey), Channel.class);
     }
 
     private Key createStreamKey(String id) {
@@ -185,8 +181,8 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         ).map(c::cast).orElseThrow(() -> new ServiceException(new ResourceNotFound(id)));
     }
 
-    protected abstract Query handleInternalQuery(String queryUri, String body);
+    protected abstract Query handleInternalQuery(String queryUri, String body, String stream_uri, String stream_source);
 
-    protected abstract Stream handleInternalStream(String id, String body);
+    protected abstract Channel handleInternalStream(String id, String body);
 
 }

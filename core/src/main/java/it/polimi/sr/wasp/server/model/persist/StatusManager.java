@@ -1,11 +1,8 @@
-package it.polimi.sr.wasp.server.model;
+package it.polimi.sr.wasp.server.model.persist;
 
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
-import it.polimi.sr.wasp.server.web.Proxy;
-import it.polimi.sr.wasp.server.web.Sink;
-import it.polimi.sr.wasp.server.web.Source;
-import it.polimi.sr.wasp.server.web.Task;
+import it.polimi.sr.wasp.server.model.concept.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
@@ -17,9 +14,8 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatusManager {
 
-    public static final Map<Key, Stream> streams = new HashMap<>();
+    public static final Map<Key, Channel> streams = new HashMap<>();
     public static final Map<Key, Task> tasks = new HashMap<>();
-    public static final Map<Key, Proxy> proxies = new HashMap<>();
     public static final Map<Key, Source> sources = new HashMap<>();
     public static final Map<Key, Sink> sinks = new HashMap<>();
 
@@ -33,8 +29,8 @@ public final class StatusManager {
         return instance;
     }
 
-    public static Optional<Stream> getStream(Key k) {
-        Stream value = streams.get(k);
+    public static Optional<Channel> getStream(Key k) {
+        Channel value = streams.get(k);
         return Optional.ofNullable(value);
     }
 
@@ -42,17 +38,6 @@ public final class StatusManager {
         return Optional.ofNullable(tasks.get(k));
     }
 
-    public static Optional<Proxy> getProxy(Key k) {
-        return Optional.ofNullable(proxies.get(k));
-    }
-
-    public static Optional<Proxy> getSource(Key k) {
-        return Optional.ofNullable(proxies.get(k));
-    }
-
-    public static Optional<Proxy> getSink(Key k) {
-        return Optional.ofNullable(proxies.get(k));
-    }
 
     public static List<Object> commit(Key k, Object... os) throws DuplicateException {
         List<Object> oos = new ArrayList<>();
@@ -64,14 +49,7 @@ public final class StatusManager {
 
     public static Object commit(Key key, Object o) throws DuplicateException {
 
-        if (o instanceof Proxy) {
-            checkDuplicate(proxies, key);
-            Proxy proxy = (Proxy) o;
-            Key key1 = KeyFactory.create(((Proxy) o).stream());
-            proxies.put(key, proxy);
-            sinks.put(key1, (Sink) o);
-            sources.put(key1, (Source) o);
-        } else if (o instanceof Source) {
+        if (o instanceof Source) {
             checkDuplicate(sources, key);
             sources.put(key, (Source) o);
         } else if (o instanceof Sink) {
@@ -84,9 +62,9 @@ public final class StatusManager {
             tasks.put(key, (Task) o);
         }
 
-        if (o instanceof Stream) {
+        if (o instanceof Channel) {
             checkDuplicate(streams, key);
-            streams.put(key, (Stream) o);
+            streams.put(key, (Channel) o);
         }
 
 
@@ -100,32 +78,36 @@ public final class StatusManager {
 
     public static void remove(Key key) throws ResourceNotFound {
         boolean test = false;
+        Object removed = null;
         if (sources.containsKey(key)) {
             test = true;
-            sources.remove(key).stop();
-
+            removed = sources.remove(key);
         }
         if (sinks.containsKey(key)) {
             test = true;
-            sinks.remove(key);
+            removed = sinks.remove(key);
         }
-        if (proxies.containsKey(key)) {
-            test = true;
-            proxies.remove(key);
-        }
-
         if (streams.containsKey(key)) {
             test = true;
-            streams.remove(key);
+            removed = streams.remove(key);
         }
         if (tasks.containsKey(key)) {
             test = true;
-            tasks.remove(key);
+            removed = tasks.remove(key);
         }
+
+        if (removed instanceof Stoppable)
+            ((Stoppable) removed).stop();
 
         if (!test)
             throw new ResourceNotFound(key.toString());
     }
 
+    public static void clear() {
+        streams.clear();
+        sources.clear();
+        sinks.clear();
+        tasks.clear();
+    }
 }
 

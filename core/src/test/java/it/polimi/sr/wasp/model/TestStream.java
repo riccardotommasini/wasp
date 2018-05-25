@@ -1,13 +1,12 @@
 package it.polimi.sr.wasp.model;
 
-import it.polimi.sr.wasp.server.model.Stream;
+import it.polimi.sr.wasp.server.model.concept.*;
 import lombok.extern.java.Log;
 
 import java.util.Observable;
-import java.util.Observer;
 
 @Log
-public class TestStream extends Observable implements Stream {
+public class TestStream extends Observable implements Channel, Named {
 
     public String id;
     public String uri;
@@ -28,16 +27,29 @@ public class TestStream extends Observable implements Stream {
         return uri;
     }
 
+
     @Override
-    public void message(String msg) {
-        log.info(id + " got a message " + msg);
-        setChanged();
-        notifyObservers(msg);
+    public void yeild(String m) {
+
     }
 
     @Override
-    public void observer(Observer observer) {
-        addObserver(observer);
+    public void await(Source s, String m) {
+
     }
 
+    @Override
+    public void add(Sink s) {
+
+    }
+
+    @Override
+    public Channel add(Channel c) {
+        return null;
+    }
+
+    @Override
+    public Channel apply(Task t) {
+        return null;
+    }
 }

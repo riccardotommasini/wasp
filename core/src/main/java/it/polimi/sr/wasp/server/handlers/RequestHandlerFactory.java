@@ -4,21 +4,18 @@ import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.rsp.vocals.core.annotations.features.Feature;
 import it.polimi.rsp.vocals.core.annotations.model.Deletable;
 import it.polimi.rsp.vocals.core.annotations.model.Exposed;
-import it.polimi.sr.wasp.server.model.KeyFactory;
-import it.polimi.sr.wasp.server.model.StatusManager;
-import it.polimi.sr.wasp.server.model.Stream;
-import it.polimi.sr.wasp.server.web.Proxy;
-import it.polimi.sr.wasp.server.web.Task;
-import it.polimi.sr.wasp.server.model.Key;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Task;
+import it.polimi.sr.wasp.server.model.persist.Key;
+import it.polimi.sr.wasp.server.model.persist.KeyFactory;
+import it.polimi.sr.wasp.server.model.persist.StatusManager;
 import lombok.extern.java.Log;
 import spark.Request;
 import spark.Response;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static spark.Spark.delete;
 import static spark.Spark.get;
@@ -27,11 +24,9 @@ import static spark.Spark.get;
 public class RequestHandlerFactory {
 
     public static Optional<RequestHandler> getServices(Object engine, Endpoint endpoint) {
-        return Arrays.stream(engine.getClass().getInterfaces())
-                .filter(i -> i.isAnnotationPresent(Feature.class))
-                .filter(i -> i.getAnnotation(Feature.class).name().equals(endpoint.name))
-                .findFirst()
-                .map(aClass -> aClass.getMethods()[0]).map(method -> {
+
+        java.util.stream.Stream<RequestHandler> abstractReflectiveRequestHandlerStream = getEngineClass(engine.getClass(), endpoint.name).stream()
+                .map(method -> {
                     switch (endpoint.method) {
                         case POST:
                             return new AbstractReflectiveRequestHandler.PostRequestHandler(engine, endpoint, method);
@@ -46,6 +41,27 @@ public class RequestHandlerFactory {
                             return new AbstractReflectiveRequestHandler.GetRequestHandler(engine, endpoint, method);
                     }
                 });
+        return abstractReflectiveRequestHandlerStream.findFirst();
+    }
+
+    private static List<Method> getEngineClass(Class<?> engine, String name) {
+
+        List<Method> collect = Arrays.stream(engine.getInterfaces())
+                .filter(i -> i.isAnnotationPresent(Feature.class))
+                .filter(i -> i.getAnnotation(Feature.class).name().equals(name))
+                .map(i -> i.getMethods()[0]).collect(Collectors.toList());
+
+        List<Method> collect1 = Arrays.stream(engine.getInterfaces()).flatMap(aClass -> Arrays.stream(aClass.getMethods()))
+                .filter(m -> m.getAnnotation(Feature.class) != null)
+                .filter(m -> m.getAnnotation(Feature.class).name().equals(name))
+                .collect(Collectors.toList());
+
+        collect.addAll(collect1);
+
+        if (!Object.class.equals(engine))
+            collect.addAll(getEngineClass(engine.getSuperclass(), name));
+        return collect;
+
     }
 
     public static Optional<RequestHandler> getGetters(Object engine, Endpoint endpoint) {
@@ -136,44 +152,36 @@ public class RequestHandlerFactory {
     }
 
     private static Collection<?> getList(Class<?> t) {
-        if (Stream.class.isAssignableFrom(t)) {
+        if (Channel.class.isAssignableFrom(t)) {
             return StatusManager.streams.values();
         } else if (Task.class.isAssignableFrom(t)) {
             return StatusManager.tasks.values();
-        } else if (Proxy.class.isAssignableFrom(t)) {
-            return StatusManager.proxies.values();
         } else return Collections.emptyList();
     }
 
     private static <T> Optional<T> getObject(Key key, Class<?> t) {
-        if (Stream.class.isAssignableFrom(t)) {
+        if (Channel.class.isAssignableFrom(t)) {
             return (Optional<T>) StatusManager.getStream(key);
         } else if (Task.class.isAssignableFrom(t)) {
-            return (Optional<T>) StatusManager.getTask(key);
-        } else if (Proxy.class.isAssignableFrom(t)) {
             return (Optional<T>) StatusManager.getTask(key);
         }
         return Optional.empty();
     }
 
     private static Object deleteList(Class<?> t) {
-        if (Stream.class.isAssignableFrom(t)) {
+        if (Channel.class.isAssignableFrom(t)) {
             StatusManager.streams.clear();
         } else if (Task.class.isAssignableFrom(t)) {
             StatusManager.tasks.clear();
-        } else if (Proxy.class.isAssignableFrom(t)) {
-            StatusManager.proxies.clear();
         }
         return null;
     }
 
     private static Object deleteObject(Key key, Class<?> t) {
-        if (Stream.class.isAssignableFrom(t)) {
+        if (Channel.class.isAssignableFrom(t)) {
             return StatusManager.streams.remove(key);
         } else if (Task.class.isAssignableFrom(t)) {
             return StatusManager.tasks.remove(key);
-        } else if (Proxy.class.isAssignableFrom(t)) {
-            return StatusManager.proxies.remove(key);
         }
         return null;
     }
