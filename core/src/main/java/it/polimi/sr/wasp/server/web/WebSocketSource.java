@@ -82,6 +82,6 @@ public class WebSocketSource implements Source, Stoppable {
 
     @Override
     public String toString() {
-        return "WebSocketSource";
+        return "{ \"source\":\"" + source + "\",\"type\":\"WebSocketSource\" }";
     }
 }

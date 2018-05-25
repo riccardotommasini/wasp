@@ -9,9 +9,12 @@ import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.handlers.Answer;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
 import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Sink;
 import it.polimi.sr.wasp.server.model.persist.Key;
 import it.polimi.sr.wasp.server.model.persist.KeyFactory;
 import it.polimi.sr.wasp.server.model.persist.StatusManager;
+import it.polimi.sr.wasp.server.web.HTTPPostSink;
+import it.polimi.sr.wasp.server.web.HttpGetSink;
 import it.polimi.sr.wasp.server.web.WebSocketSink;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.extern.java.Log;
@@ -23,6 +26,7 @@ import spark.utils.StringUtils;
 import java.util.Locale;
 import java.util.Optional;
 
+import static spark.Spark.path;
 import static spark.Spark.post;
 
 /*This service is quite difference since as a result it spawns new APIs
@@ -76,44 +80,65 @@ public class ObserverRequestHandler implements RequestHandler {
         Protocols protocol = Protocols.valueOf(jsonObject.get(endpoint.params[1].name).getAsString().toUpperCase(Locale.ENGLISH));
         String surl = base_stream + stream;
         String qurl = base_query + stream;
-        Key k;
-        return StatusManager.getStream(k = KeyFactory.get2("http://" + qurl)).map(Optional::of)
-                .orElse(StatusManager.getStream(KeyFactory.create("http://" + surl)))
-                .map(s -> {
-                    try {
-                        String path = base_ws + stream + "/observers/" + Math.abs(k.hashCode());
-                        switch (protocol) {
-                            case EVENTS:
-                            case WEBSOCKET:
-                                startWebSocket(s, k, path, this.wsport = wsport + 1);
-                                break;
-                            case MTTQ:
-                            case HTTP:
-                            default:
-                        }
-                        return new Answer(200, "Observer Successfully Created at [ " + path + "] port [" + this.wsport + "]");
-                    } catch (DuplicateException e) {
-                        e.printStackTrace();
-                        return new Answer(409, "Duplicate Resource " + stream);
-                    }
 
-                }).orElse(new Answer(HTTP_BAD_REQUEST, "Observer NOT Successfully Created"));
+        Key k1 = KeyFactory.get2("http://" + qurl);
+        Key k2 = KeyFactory.get("http://" + surl);
+        String path = base_ws + stream + "/observers/";
+
+
+        return StatusManager.getStream(k1).map(s ->
+                getAnswer(stream, protocol, k1, s, path))
+                .map(Optional::of)
+                .orElse(StatusManager.getStream(k2)
+                        .map(s -> getAnswer(stream, protocol, k2, s, path)))
+                .orElse(new Answer(HTTP_BAD_REQUEST, "Observer NOT Successfully Created"));
+
     }
 
-    private void startWebSocket(Channel s, Key key, String path, int p) throws DuplicateException {
+    private Answer getAnswer(String stream, Protocols protocol, Key k, Channel s, String path) {
+        try {
+            Sink observer = null;
+            String path1 = path + Math.abs(k.hashCode());
+            switch (protocol) {
+                case EVENTS:
+                    observer = getEventsSink(path);
+                    break;
+                case HTTP:
+                    observer = startHttpSink(stream, path1, this.wsport = wsport + 1);
+                    break;
+                case WEBSOCKET:
+                default:
+                    observer = startWebSocket(path1, this.wsport = wsport + 1);
+                    break;
+
+            }
+            s.add(observer);
+            StatusManager.commit(KeyFactory.create(k), observer);
+            return new Answer(200, "Observer Successfully Created at [ " + path1 + "] port [" + this.wsport + "]");
+        } catch (DuplicateException e) {
+            e.printStackTrace();
+            return new Answer(409, "Duplicate Resource " + stream);
+        }
+    }
+
+    private Sink getEventsSink(String path) {
+        return new HTTPPostSink(path);
+    }
+
+    private Sink startHttpSink(String stream, String path, int port) {
+        Service ws = Service.ignite().port(port).threadPool(4);
+        final HttpGetSink httpGetSink = new HttpGetSink(stream, path, 3, ws);
+        ws.path(this.name, httpGetSink::call);
+        return httpGetSink;
+    }
+
+    private Sink startWebSocket(String path, int p) throws DuplicateException {
         log.info("New Service Instance opened on port [" + p + "]");
         Service ws = Service.ignite().port(p).threadPool(4);
         WebSocketSink observer = new WebSocketSink(path, ws);
-        s.add(observer);
-        StatusManager.commit(KeyFactory.create(key), observer);
         ws.path(name, observer::call);
+        return observer;
     }
 
-    private class ObserverModel {
-
-        public String stream;
-        public Protocols protocol; //TODO this could be a resource to dereference
-
-    }
 }
 

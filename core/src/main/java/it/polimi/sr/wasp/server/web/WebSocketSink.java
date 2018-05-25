@@ -53,7 +53,8 @@ public class WebSocketSink implements Sink, RequestHandler {
     protected void broadcast(Object read) {
         sessions.forEach(session -> {
             try {
-                session.getRemote().sendString(gson.toJson(read));
+                String text = (read instanceof String) ? (String) read :  gson.toJson(read);
+                session.getRemote().sendString(text);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -80,5 +81,10 @@ public class WebSocketSink implements Sink, RequestHandler {
     @Override
     public Object handle(Request request, Response response) throws Exception {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "{ \"url\":\"" + url + "\",\"type\":\"WebSocketSink\"}";
     }
 }
