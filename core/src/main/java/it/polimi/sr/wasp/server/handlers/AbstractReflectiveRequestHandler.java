@@ -62,7 +62,7 @@ public abstract class AbstractReflectiveRequestHandler implements RequestHandler
     public Object handle(Request request, Response response) throws Exception {
         Answer answer = process(engine, getParams(request));
         response.status(answer.getCode());
-        response.type(ContentType.TEXT_PLAIN.getMimeType());
+        response.type(ContentType.APPLICATION_JSON.getMimeType());
         return answer;
     }
 

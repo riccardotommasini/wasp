@@ -14,7 +14,7 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatusManager {
 
-    public static final Map<Key, Channel> streams = new HashMap<>();
+    public static final Map<Key, Channel> channels = new HashMap<>();
     public static final Map<Key, Task> tasks = new HashMap<>();
     public static final Map<Key, Source> sources = new HashMap<>();
     public static final Map<Key, Sink> sinks = new HashMap<>();
@@ -29,8 +29,18 @@ public final class StatusManager {
         return instance;
     }
 
-    public static Optional<Channel> getStream(Key k) {
-        Channel value = streams.get(k);
+    public static Optional<Channel> getChannel(Key k) {
+        Channel value = channels.get(k);
+        return Optional.ofNullable(value);
+    }
+
+    public static Optional<Sink> getSink(Key k) {
+        Sink value = sinks.get(k);
+        return Optional.ofNullable(value);
+    }
+
+    public static Optional<Source> getSource(Key k) {
+        Source value = sources.get(k);
         return Optional.ofNullable(value);
     }
 
@@ -63,8 +73,8 @@ public final class StatusManager {
         }
 
         if (o instanceof Channel) {
-            checkDuplicate(streams, key);
-            streams.put(key, (Channel) o);
+            checkDuplicate(channels, key);
+            channels.put(key, (Channel) o);
         }
 
 
@@ -87,14 +97,15 @@ public final class StatusManager {
             test = true;
             removed = sinks.remove(key);
         }
-        if (streams.containsKey(key)) {
+        if (channels.containsKey(key)) {
             test = true;
-            removed = streams.remove(key);
+            removed = channels.remove(key);
         }
         if (tasks.containsKey(key)) {
             test = true;
             removed = tasks.remove(key);
         }
+
 
         if (removed instanceof Stoppable)
             ((Stoppable) removed).stop();
@@ -104,7 +115,7 @@ public final class StatusManager {
     }
 
     public static void clear() {
-        streams.clear();
+        channels.clear();
         sources.clear();
         sinks.clear();
         tasks.clear();

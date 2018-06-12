@@ -3,9 +3,7 @@ package it.polimi.sr.wasp.server.web;
 import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.sr.wasp.server.handlers.AbstractReflectiveRequestHandler;
-import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.concept.*;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
@@ -15,8 +13,6 @@ import spark.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static spark.Spark.port;
 
 
 @Log
@@ -60,5 +56,16 @@ public class HttpGetSink extends AbstractReflectiveRequestHandler implements Sin
     public void await(Channel c, String m) {
         //TODO new window blank node
         this.message = m;
+    }
+
+    @Override
+    public Descriptor describe() {
+        return new DescriptorHashMap() {
+            {
+                put("@type", "vocals:StreamEndpoint");
+                put("dcat:accessURL", "http://");
+                //TODO
+            }
+        };
     }
 }

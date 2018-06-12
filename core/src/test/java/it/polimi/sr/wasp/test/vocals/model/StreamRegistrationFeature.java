@@ -10,7 +10,7 @@ import it.polimi.sr.wasp.server.model.concept.Channel;
 @Feature(name = "StreamRegistrationFeature")
 public interface StreamRegistrationFeature {
 
-    @RSPService(endpoint = "/streams", method = HttpMethod.POST)
+    @RSPService(endpoint = "/channels", method = HttpMethod.POST)
     Channel register_stream(@Param(name = "stream", uri = true) String id,
                             @Param(name = "uri") String uri);
 

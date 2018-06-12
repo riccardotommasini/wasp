@@ -28,4 +28,8 @@ public class URIUtils {
                 .replace("ws://", "")
                 .replace("wss://", "");
     }
+
+    public static boolean isUri(String id) {
+        return id.contains("http://") || id.contains("https://");
+    }
 }

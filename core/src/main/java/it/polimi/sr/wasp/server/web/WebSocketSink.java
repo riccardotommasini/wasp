@@ -2,9 +2,7 @@ package it.polimi.sr.wasp.server.web;
 
 import com.google.gson.Gson;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
-import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.concept.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.eclipse.jetty.websocket.api.Session;
@@ -28,6 +26,10 @@ public class WebSocketSink implements Sink, RequestHandler {
     private static final Gson gson = new Gson();
     private final String url;
     private final Service http;
+    private final String ip;
+    private final int port;
+    private final String base;
+
     private final Set<Session> sessions = new HashSet<>();
 
     @OnWebSocketConnect
@@ -53,7 +55,7 @@ public class WebSocketSink implements Sink, RequestHandler {
     protected void broadcast(Object read) {
         sessions.forEach(session -> {
             try {
-                String text = (read instanceof String) ? (String) read :  gson.toJson(read);
+                String text = (read instanceof String) ? (String) read : gson.toJson(read);
                 session.getRemote().sendString(text);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -72,6 +74,19 @@ public class WebSocketSink implements Sink, RequestHandler {
     }
 
     @Override
+    public Descriptor describe() {
+        return new DescriptorHashMap() {
+            {
+                put("@type", "vocals:StreamEndpoint");
+                put("dcat:accessURL", "ws://" + ip + ":" + port + http.getPaths() + url);
+                put("dcat:format", "frmt:JSON-LD");
+                put("vsd:publishedBy", base);
+
+            }
+        };
+    }
+
+    @Override
     public void call() {
         log.info(url);
         http.webSocket(url, this);
@@ -85,6 +100,7 @@ public class WebSocketSink implements Sink, RequestHandler {
 
     @Override
     public String toString() {
-        return "{ \"url\":\"" + url + "\",\"type\":\"WebSocketSink\"}";
+        //TODO ip, port
+        return "ws://" + ip + ":" + port + http.getPaths() + url;
     }
 }

@@ -71,4 +71,5 @@ public class HTTPGetSource implements Source, Stoppable {
     public String toString() {
         return "{ \"source\":\"" + source + "\",\"type\":\"WebSocketSource\" }";
     }
+
 }

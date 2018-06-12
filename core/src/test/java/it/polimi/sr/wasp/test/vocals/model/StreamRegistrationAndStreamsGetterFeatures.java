@@ -12,11 +12,11 @@ public interface StreamRegistrationAndStreamsGetterFeatures {
 
 
     @Feature(name = "StreamsGetterFeature")
-    @RSPService(endpoint = "/streams")
+    @RSPService(endpoint = "/channels")
     List<Channel> get_streams();
 
     @Feature(name = "StreamRegistrationFeature")
-    @RSPService(endpoint = "/streams", method = HttpMethod.POST)
+    @RSPService(endpoint = "/channels", method = HttpMethod.POST)
     Channel register_stream(@Param(name = "stream", uri = true) String id,
                             @Param(name = "uri") String uri);
 

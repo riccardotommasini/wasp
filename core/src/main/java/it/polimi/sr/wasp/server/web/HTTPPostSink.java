@@ -1,10 +1,11 @@
 package it.polimi.sr.wasp.server.web;
 
-import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.concept.*;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import java.io.IOException;
 
@@ -58,4 +59,17 @@ public class HTTPPostSink implements Sink {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Descriptor describe() {
+        return new DescriptorHashMap() {
+            {
+                put("@type", "vocals:StreamEndpoint");
+                put("dcat:accessURL", "http://");
+                //TODO
+            }
+        };
+    }
+
+
 }

@@ -1,6 +1,6 @@
 package it.polimi.sr.wasp.server.model.concept;
 
-public interface Channel extends Named{
+public interface Channel extends Named {
 
     void yeild(String m);
 
@@ -11,4 +11,6 @@ public interface Channel extends Named{
     Channel add(Channel c);
 
     Channel apply(Task t);
+
+    Descriptor describe();
 }

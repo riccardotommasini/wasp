@@ -24,7 +24,7 @@ public class StatusManagerTest {
     }
     @Test
     public void testkeyFactory() {
-        //Check whether the streams are registered
+        //Check whether the channels are registered
 
         Object o = new Object();
 
@@ -37,7 +37,7 @@ public class StatusManagerTest {
 
     @Test
     public void testTask() throws DuplicateException, ResourceNotFound {
-        //Check whether the streams are registered
+        //Check whether the channels are registered
 
         //Register the query to the engine
         Task queryTask = new TestTask();

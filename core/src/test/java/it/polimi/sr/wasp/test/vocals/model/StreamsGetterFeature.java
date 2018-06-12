@@ -10,7 +10,7 @@ import java.util.List;
 @Feature(name = "StreamsGetterFeature")
 public interface StreamsGetterFeature {
 
-    @RSPService(endpoint = "/streams")
+    @RSPService(endpoint = "/channels")
     List<Channel> get_streams();
 
 }

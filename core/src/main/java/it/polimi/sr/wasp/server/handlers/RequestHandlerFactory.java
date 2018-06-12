@@ -153,7 +153,7 @@ public class RequestHandlerFactory {
 
     private static Collection<?> getList(Class<?> t) {
         if (Channel.class.isAssignableFrom(t)) {
-            return StatusManager.streams.values();
+            return StatusManager.channels.values();
         } else if (Task.class.isAssignableFrom(t)) {
             return StatusManager.tasks.values();
         } else return Collections.emptyList();
@@ -161,7 +161,7 @@ public class RequestHandlerFactory {
 
     private static <T> Optional<T> getObject(Key key, Class<?> t) {
         if (Channel.class.isAssignableFrom(t)) {
-            return (Optional<T>) StatusManager.getStream(key);
+            return (Optional<T>) StatusManager.getChannel(key);
         } else if (Task.class.isAssignableFrom(t)) {
             return (Optional<T>) StatusManager.getTask(key);
         }
@@ -170,7 +170,7 @@ public class RequestHandlerFactory {
 
     private static Object deleteList(Class<?> t) {
         if (Channel.class.isAssignableFrom(t)) {
-            StatusManager.streams.clear();
+            StatusManager.channels.clear();
         } else if (Task.class.isAssignableFrom(t)) {
             StatusManager.tasks.clear();
         }
@@ -179,7 +179,7 @@ public class RequestHandlerFactory {
 
     private static Object deleteObject(Key key, Class<?> t) {
         if (Channel.class.isAssignableFrom(t)) {
-            return StatusManager.streams.remove(key);
+            return StatusManager.channels.remove(key);
         } else if (Task.class.isAssignableFrom(t)) {
             return StatusManager.tasks.remove(key);
         }

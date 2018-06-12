@@ -6,4 +6,6 @@ public interface Sink {
 
     void await(Channel c, String m);
 
+    Descriptor describe();
+
 }
