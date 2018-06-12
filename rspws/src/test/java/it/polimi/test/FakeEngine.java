@@ -3,8 +3,9 @@ package it.polimi.test;
 import it.polimi.deib.rsp.vocals.rdf4j.VocalsFactoryRDF4J;
 import it.polimi.sr.wasp.rsp.RSPEngine;
 import it.polimi.sr.wasp.rsp.RSPServer;
+import it.polimi.sr.wasp.rsp.model.DataStream;
 import it.polimi.sr.wasp.rsp.model.Query;
-import it.polimi.sr.wasp.rsp.model.Stream;
+import it.polimi.sr.wasp.rsp.model.QueryBody;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import lombok.extern.java.Log;
 
@@ -18,13 +19,18 @@ public class FakeEngine extends RSPEngine {
     }
 
     @Override
+    protected String[] extractStreams(QueryBody body) {
+        return new String[0];
+    }
+
+    @Override
     protected Query handleInternalQuery(String queryUri, String body, String uri, String source) {
         return new FakeQuery(queryUri, body, uri, source);
     }
 
     @Override
     protected Channel handleInternalStream(String id, String body) {
-        return new Stream(id, body);
+        return new DataStream(base, id, body);
     }
 
 
@@ -45,7 +51,7 @@ public class FakeEngine extends RSPEngine {
     private class FakeQuery extends Query {
         public FakeQuery(String queryUri, String body, String uri, String source) {
             super(queryUri, body);
-            this.out = new Stream(uri, source);
+            this.out = new DataStream(base, uri, source);
         }
     }
 }

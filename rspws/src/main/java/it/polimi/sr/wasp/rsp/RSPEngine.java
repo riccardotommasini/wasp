@@ -11,9 +11,9 @@ import it.polimi.sr.wasp.rsp.features.streams.StreamDeletionFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamGetterFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamRegistrationFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamsGetterFeature;
+import it.polimi.sr.wasp.rsp.model.DataStream;
 import it.polimi.sr.wasp.rsp.model.Query;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
-import it.polimi.sr.wasp.rsp.model.Stream;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
 import it.polimi.sr.wasp.server.exceptions.ServiceException;
@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
 @ProcessingService(host = "localhost", port = 8181)
 public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeletionFeature, QueryGetterFeature, QueriesGetterFeature, StreamRegistrationFeature, StreamGetterFeature, StreamsGetterFeature, StreamDeletionFeature {
 
-    private final String base;
-    private final String name;
+    protected final String base;
+    protected final String name;
 
     public RSPEngine(String name, String base) {
         this.name = name;
@@ -52,17 +52,19 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         try {
 
             List<Channel> streams = new ArrayList<>();
-            for (String s : body.input_streams) {
+            String[] input_streams = extractStreams(body);
+
+            for (String s : input_streams) {
                 Channel channel = StatusManager
-                        .getStream(getStreamKey(s))
+                        .getChannel(getStreamKey(s))
                         .orElseGet(() -> register_vocals_stream(s, s));
                 streams.add(channel);
                 //TODO commit channel again?
             }
 
-            Key k = createQueryKey(body.id);
+            Key k = createQueryKey(body.out);
 
-            Query query = handleInternalQuery(getQueryUri(body.id), body.body, getStreamUri(body.id), body.output_stream);
+            Query query = handleInternalQuery(getQueryUri(body.out), body.body, getStreamUri(body.out), body.out);
 
             for (Channel channel : streams) {
                 channel.apply(query);
@@ -82,6 +84,7 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         }
     }
 
+    protected abstract String[] extractStreams(QueryBody body);
 
     @Override
     public List<Query> get_queries() {
@@ -127,26 +130,22 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     }
 
     @Override
-    public Stream get_stream(String id) {
-        return (Stream) StatusManager.getStream(getStreamKey(id))
-                .orElseGet(() -> StatusManager.getStream(KeyFactory.get(getQueryKey(id)))
+    public DataStream get_stream(String id) {
+        return (DataStream) StatusManager.getChannel(getStreamKey(id))
+                .orElseGet(() -> StatusManager.getChannel(KeyFactory.get(getQueryKey(id)))
                         .orElseThrow(() -> new ServiceException(new ResourceNotFound(id))));
     }
 
     @Override
-    public List<Stream> get_streams() {
-        Collection<Channel> values = StatusManager.streams.values();
-        return values.stream().map(Stream.class::cast).collect(Collectors.toList());
+    public List<String> get_streams() {
+        Collection<Channel> values = StatusManager.channels.values();
+        return values.stream().map(DataStream.class::cast).map(s -> "{" + "\"iri\":\"" + s.iri() + "\"" + "}").collect(Collectors.toList());
     }
 
     @Override
     public Channel delete_stream(String id) {
         Key streamKey = getStreamKey(id);
-        return deleteResource(id, streamKey, StatusManager.getStream(streamKey), Channel.class);
-    }
-
-    private Key createStreamKey(String id) {
-        return KeyFactory.create(getStreamUri(id));
+        return deleteResource(id, streamKey, StatusManager.getChannel(streamKey), Channel.class);
     }
 
     private Key createQueryKey(String id) {
@@ -158,7 +157,8 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     }
 
     private Key getStreamKey(String id) {
-        return KeyFactory.get(getStreamUri(id));
+
+        return URIUtils.isUri(id) ? KeyFactory.get(id) : KeyFactory.get(getStreamUri(id));
     }
 
     private String getStreamUri(String id) {
