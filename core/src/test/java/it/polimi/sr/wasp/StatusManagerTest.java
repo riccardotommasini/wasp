@@ -3,8 +3,7 @@ package it.polimi.sr.wasp;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
 import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Task;
-import it.polimi.sr.wasp.server.model.concept.calls.Caller;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.persist.Key;
 import it.polimi.sr.wasp.server.model.persist.KeyFactory;
 import it.polimi.sr.wasp.server.model.persist.StatusManager;
@@ -19,10 +18,11 @@ public class StatusManagerTest {
     }
 
     @Before
-    public void before(){
+    public void before() {
         StatusManager.clear();
         KeyFactory.clear();
     }
+
     @Test
     public void testkeyFactory() {
         //Check whether the channels are registered
@@ -73,14 +73,5 @@ public class StatusManagerTest {
             return new Channel[0];
         }
 
-        @Override
-        public void yield(String m) {
-
-        }
-
-        @Override
-        public void await(Caller c, String m) {
-
-        }
     }
 }

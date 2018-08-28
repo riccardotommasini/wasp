@@ -4,19 +4,21 @@ import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Task;
-import it.polimi.sr.wasp.server.model.concept.calls.Caller;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class ObservableTask extends Observable implements Task {
+public abstract class InternalTaskWrapper implements Task {
 
     public final String id;
     public final String body;
@@ -38,10 +40,6 @@ public class ObservableTask extends Observable implements Task {
     @Override
     public String iri() {
         return id;
-    }
-
-    public void add(Channel in) {
-        this.in.add(in);
     }
 
     @Override
@@ -99,15 +97,4 @@ public class ObservableTask extends Observable implements Task {
         return s;
     }
 
-    @Override
-    public void yield(String m) {
-        setChanged();
-        notifyObservers(m);
-    }
-
-    @Override
-    public void await(Caller c, String m) {
-        setChanged();
-        notifyObservers(m);
-    }
 }

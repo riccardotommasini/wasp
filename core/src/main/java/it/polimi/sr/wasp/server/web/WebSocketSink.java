@@ -2,7 +2,7 @@ package it.polimi.sr.wasp.server.web;
 
 import com.google.gson.Gson;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
-import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.Sink;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ public class WebSocketSink implements Sink, RequestHandler {
     private final String base;
 
     private final Set<Session> sessions = new HashSet<>();
+    private Caller caller;
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
@@ -66,11 +67,6 @@ public class WebSocketSink implements Sink, RequestHandler {
     }
 
     @Override
-    public void yield(String m) {
-        broadcast(m);
-    }
-
-    @Override
     public Descriptor describe() {
         return new DescriptorHashMap() {
             {
@@ -99,5 +95,10 @@ public class WebSocketSink implements Sink, RequestHandler {
     public String toString() {
         //TODO ip, port
         return "ws://" + ip + ":" + port + http.getPaths() + url;
+    }
+
+    @Override
+    public void await(String m) {
+        broadcast(m);
     }
 }

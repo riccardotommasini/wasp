@@ -33,9 +33,9 @@ public class HttpGetSink extends AbstractReflectiveRequestHandler implements Sin
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        if (!request.params().containsKey("window"))
+        if (!request.params().containsKey("window")) {
             return message;
-        else {
+        } else {
             return windows.get(request.params("window"));
         }
     }
@@ -48,7 +48,7 @@ public class HttpGetSink extends AbstractReflectiveRequestHandler implements Sin
     }
 
     @Override
-    public void yield(String m) {
+    public void await(String m) {
         //TODO new window blank node
         this.message = m;
     }

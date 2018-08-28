@@ -5,8 +5,9 @@ import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Task;
-import it.polimi.sr.wasp.server.model.concept.calls.Caller;
+import it.polimi.sr.wasp.server.model.concept.tasks.AsynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.SynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
@@ -16,17 +17,18 @@ import java.io.IOException;
 import java.util.*;
 
 @Log4j2
-public class DataStream implements Channel {
+public class StatelessDataChannel implements Channel {
 
     public String id;
     public String source;
     private String base;
 
     protected List<Sink> sinks = new ArrayList<>();
+    protected List<AsynchTask> synch_task = new ArrayList<>();
+    protected List<SynchTask> asynch_task = new ArrayList<>();
     protected List<Task> tasks = new ArrayList<>();
 
-
-    public DataStream(String base, String id, String uri) {
+    public StatelessDataChannel(String base, String id, String uri) {
         this.id = id;
         this.source = uri;
         this.base = base;
@@ -99,34 +101,44 @@ public class DataStream implements Channel {
         return s;
     }
 
-
     @Override
-    public void yield(String message) {
+    public Channel put(String message) {
         log.debug(" Yield message " + message);
-        tasks.forEach(t -> t.yield(message));
-        sinks.forEach(sink -> sink.yield(message));
+        synch_task.forEach(t -> t.yield(this, message));
+        sinks.forEach(sink -> sink.await(message));
+        asynch_task.forEach(t -> t.await(message));
+        return this;
     }
 
     @Override
-    public void await(Caller s, String m) {
-        log.debug(id + " got a message " + m + "from " + s);
-        yield(m);
-    }
-
-    @Override
-    public void add(Sink observer) {
+    public Channel add(Sink observer) {
         sinks.add(observer);
+        return this;
     }
 
     @Override
     public Channel add(Channel c) {
         //TODO
-        return c;
+        return this;
     }
 
     @Override
-    public Channel apply(Task t) {
+    public Channel add(Task t) {
         tasks.add(t);
+        return this;
+    }
+
+    @Override
+    public Channel add(SynchTask t) {
+        tasks.add(t);
+        asynch_task.add(t);
+        return this;
+    }
+
+    @Override
+    public Channel add(AsynchTask t) {
+        tasks.add(t);
+        synch_task.add(t);
         return this;
     }
 

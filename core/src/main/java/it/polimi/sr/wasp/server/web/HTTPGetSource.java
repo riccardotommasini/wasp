@@ -37,7 +37,7 @@ public class HTTPGetSource implements Source {
                             .build();
 
                     Response response = client.newCall(request).execute();
-                    channel.yield(response.body().string());
+                    channel.put(response.body().string());
                     Thread.sleep(this.poll);
 
                 } catch (IOException | InterruptedException e) {

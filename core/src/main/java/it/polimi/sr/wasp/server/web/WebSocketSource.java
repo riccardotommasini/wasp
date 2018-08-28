@@ -51,10 +51,10 @@ public class WebSocketSource implements Source {
     }
 
     @OnWebSocketMessage
-    //TODO this is the method that represents yield
+    //TODO this is the method that represents await
     public void message(Session session, String message) throws IOException {
         log.debug(message);
-        channel.yield(message);
+        channel.put(message);
     }
 
     @Override

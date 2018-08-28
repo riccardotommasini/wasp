@@ -3,13 +3,15 @@ package it.polimi.test;
 import it.polimi.deib.rsp.vocals.rdf4j.VocalsFactoryRDF4J;
 import it.polimi.sr.wasp.rsp.RSPEngine;
 import it.polimi.sr.wasp.rsp.RSPServer;
-import it.polimi.sr.wasp.rsp.model.DataStream;
-import it.polimi.sr.wasp.rsp.model.ObservableTask;
+import it.polimi.sr.wasp.rsp.exceptions.InternalEngineException;
+import it.polimi.sr.wasp.rsp.model.StatelessDataChannel;
+import it.polimi.sr.wasp.rsp.model.InternalTaskWrapper;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
+import java.util.List;
 
 @Log
 public class FakeEngine extends RSPEngine {
@@ -24,13 +26,13 @@ public class FakeEngine extends RSPEngine {
     }
 
     @Override
-    protected ObservableTask handleInternalQuery(String queryUri, String body, String uri, String source) {
+    protected InternalTaskWrapper handleInternalQuery(String queryUri, String body, String uri, String source, List<Channel> streams) throws InternalEngineException {
         return new FakeQuery(queryUri, body, uri, source);
     }
 
     @Override
     protected Channel handleInternalStream(String id, String body) {
-        return new DataStream(base, id, body);
+        return new StatelessDataChannel(base, id, body);
     }
 
 
@@ -49,10 +51,10 @@ public class FakeEngine extends RSPEngine {
         }
     }
 
-    private class FakeQuery extends ObservableTask {
+    private class FakeQuery extends InternalTaskWrapper {
         public FakeQuery(String queryUri, String body, String uri, String source) {
             super(queryUri, body, FakeEngine.this.base);
-            this.out = new DataStream(base, uri, source);
+            this.out = new StatelessDataChannel(base, uri, source);
         }
     }
 }

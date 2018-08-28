@@ -29,14 +29,14 @@ import java.util.Optional;
 import static spark.Spark.post;
 
 /*This service is quite difference since as a result it spawns new APIs
-*
-* - a web socket API that does not accept incoming message and pushed out the results
-* - a get API that allows a stream to be pulled out
-* - a service that POST a call to an external service sending the data
-* - other protocols?
-*
-*
-* */
+ *
+ * - a web socket API that does not accept incoming message and pushed out the results
+ * - a get API that allows a stream to be pulled out
+ * - a service that POST a call to an external service sending the data
+ * - other protocols?
+ *
+ *
+ * */
 @Log
 public class ObserverRequestHandler implements RequestHandler {
 
@@ -73,7 +73,7 @@ public class ObserverRequestHandler implements RequestHandler {
     }
 
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handle(Request request, Response response) {
         final String stream = request.params(endpoint.params[0].name);
         JsonObject jsonObject = gson.fromJson(request.body(), JsonObject.class);
         Protocols protocol = Protocols.valueOf(jsonObject.get(endpoint.params[1].name).getAsString().toUpperCase(Locale.ENGLISH));
@@ -131,7 +131,7 @@ public class ObserverRequestHandler implements RequestHandler {
         return httpGetSink;
     }
 
-    private Sink startWebSocket(String path, int p) throws DuplicateException {
+    private Sink startWebSocket(String path, int p) {
         log.info("New Service Instance opened on port [" + p + "]");
         Service ws = Service.ignite().port(p).threadPool(4);
         WebSocketSink observer = new WebSocketSink(path, ws, "localhost", p, "http://" + host + ":" + port + "/" + name);

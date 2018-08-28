@@ -1,9 +1,10 @@
 package it.polimi.sr.wasp.model;
 
-import it.polimi.sr.wasp.server.model.concept.calls.Caller;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Task;
+import it.polimi.sr.wasp.server.model.concept.tasks.AsynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.SynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import lombok.extern.java.Log;
 
@@ -33,23 +34,28 @@ public class TestStream extends Observable implements Channel {
 
 
     @Override
-    public void yield(String m) {
-
-    }
-
-    @Override
-    public void add(Sink s) {
-
+    public Channel add(Sink s) {
+        return this;
     }
 
     @Override
     public Channel add(Channel c) {
-        return null;
+        return this;
     }
 
     @Override
-    public Channel apply(Task t) {
-        return null;
+    public Channel add(Task t) {
+        return this;
+    }
+
+    @Override
+    public Channel add(AsynchTask t) {
+        return this;
+    }
+
+    @Override
+    public Channel add(SynchTask t) {
+        return this;
     }
 
     @Override
@@ -57,8 +63,9 @@ public class TestStream extends Observable implements Channel {
         return null;
     }
 
-    @Override
-    public void await(Caller c, String m) {
 
+    @Override
+    public Channel put(String m) {
+        return this;
     }
 }

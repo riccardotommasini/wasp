@@ -2,7 +2,10 @@ package it.polimi.sr.wasp.server.model.persist;
 
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
-import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Sink;
+import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
@@ -88,24 +91,22 @@ public final class StatusManager {
 
     public static void remove(Key key) throws ResourceNotFound {
         boolean test = false;
-        Object removed = null;
         if (sources.containsKey(key)) {
             test = true;
             Source remove = sources.remove(key);
             remove.stop();
-            removed = remove;
         }
         if (sinks.containsKey(key)) {
             test = true;
-            removed = sinks.remove(key);
+            sinks.remove(key);
         }
         if (channels.containsKey(key)) {
             test = true;
-            removed = channels.remove(key);
+            channels.remove(key);
         }
         if (tasks.containsKey(key)) {
             test = true;
-            removed = tasks.remove(key);
+            tasks.remove(key);
         }
 
         if (!test)

@@ -1,18 +1,26 @@
 package it.polimi.sr.wasp.server.model.concept;
 
-import it.polimi.sr.wasp.server.model.concept.calls.AsynchCallee;
-import it.polimi.sr.wasp.server.model.concept.calls.Callee;
+import it.polimi.sr.wasp.server.model.concept.tasks.AsynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.SynchTask;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 
-public interface Channel extends AsynchCallee, Callee {
+//Synchronous Sink
+public interface Channel {
 
     String iri();
 
-    void add(Sink s);
+    Channel put(String m);
+
+    Channel add(Sink s);
 
     Channel add(Channel c);
 
-    Channel apply(Task t);
+    Channel add(Task t);
+
+    Channel add(AsynchTask t);
+
+    Channel add(SynchTask t);
 
     Descriptor describe();
 }

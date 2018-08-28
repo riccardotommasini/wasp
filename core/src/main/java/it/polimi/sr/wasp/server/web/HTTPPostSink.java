@@ -1,15 +1,10 @@
 package it.polimi.sr.wasp.server.web;
 
-import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Sink;
-import it.polimi.sr.wasp.server.model.concept.Source;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
 import java.io.IOException;
 
@@ -26,7 +21,7 @@ public class HTTPPostSink implements Sink {
         this.callback = callback;
     }
 
-    private void callback(String message) throws IOException, InterruptedException {
+    private Response response(String message) throws IOException, InterruptedException {
         RequestBody body = RequestBody.create(JSON, message);
         Request request = new Request.Builder()
                 .url(this.callback)
@@ -34,11 +29,11 @@ public class HTTPPostSink implements Sink {
                 .addHeader("content-type", "application/json")
                 .build();
 
-        client.newCall(request).execute();
+        return client.newCall(request).execute();
     }
 
     public String toString() {
-        return "{ \"callback\":\"" + callback + "\",\"type\":\"WebSocketSource\" }";
+        return "{ \"response\":\"" + callback + "\",\"type\":\"WebSocketSource\" }";
     }
 
     @Override
@@ -52,15 +47,15 @@ public class HTTPPostSink implements Sink {
         };
     }
 
+
     @Override
-    public void yield(String m) {
+    public void await(String m) {
         try {
-            callback(m);
+            response(m).message();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -5,7 +5,7 @@ import it.polimi.rsp.vocals.core.annotations.features.Feature;
 import it.polimi.rsp.vocals.core.annotations.model.Deletable;
 import it.polimi.rsp.vocals.core.annotations.model.Exposed;
 import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.Task;
+import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.persist.Key;
 import it.polimi.sr.wasp.server.model.persist.KeyFactory;
 import it.polimi.sr.wasp.server.model.persist.StatusManager;
