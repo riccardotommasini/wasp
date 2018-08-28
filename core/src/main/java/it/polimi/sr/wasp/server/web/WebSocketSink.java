@@ -33,7 +33,6 @@ public class WebSocketSink implements Sink, RequestHandler {
     private final String base;
 
     private final Set<Session> sessions = new HashSet<>();
-    private Caller caller;
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
