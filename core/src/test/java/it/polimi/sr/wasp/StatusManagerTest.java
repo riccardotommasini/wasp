@@ -4,6 +4,7 @@ import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Task;
+import it.polimi.sr.wasp.server.model.concept.calls.Caller;
 import it.polimi.sr.wasp.server.model.persist.Key;
 import it.polimi.sr.wasp.server.model.persist.KeyFactory;
 import it.polimi.sr.wasp.server.model.persist.StatusManager;
@@ -70,6 +71,16 @@ public class StatusManagerTest {
         @Override
         public Channel[] in() {
             return new Channel[0];
+        }
+
+        @Override
+        public void yield(String m) {
+
+        }
+
+        @Override
+        public void await(Caller c, String m) {
+
         }
     }
 }

@@ -4,8 +4,9 @@ import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.server.model.concept.Task;
+import it.polimi.sr.wasp.server.model.concept.calls.Caller;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -98,4 +99,15 @@ public class ObservableTask extends Observable implements Task {
         return s;
     }
 
+    @Override
+    public void yield(String m) {
+        setChanged();
+        notifyObservers(m);
+    }
+
+    @Override
+    public void await(Caller c, String m) {
+        setChanged();
+        notifyObservers(m);
+    }
 }

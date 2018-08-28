@@ -3,7 +3,9 @@ package it.polimi.sr.wasp.rsp.model;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
-import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Sink;
+import it.polimi.sr.wasp.server.model.concept.Task;
 import it.polimi.sr.wasp.server.model.concept.calls.Caller;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
@@ -99,9 +101,10 @@ public class DataStream implements Channel {
 
 
     @Override
-    public void yield(String task) {
-        log.debug(" Yield message " + task);
-        sinks.forEach(sink -> sink.yield(task));
+    public void yield(String message) {
+        log.debug(" Yield message " + message);
+        tasks.forEach(t -> t.yield(message));
+        sinks.forEach(sink -> sink.yield(message));
     }
 
     @Override
