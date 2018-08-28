@@ -91,7 +91,9 @@ public final class StatusManager {
         Object removed = null;
         if (sources.containsKey(key)) {
             test = true;
-            removed = sources.remove(key);
+            Source remove = sources.remove(key);
+            remove.stop();
+            removed = remove;
         }
         if (sinks.containsKey(key)) {
             test = true;
@@ -105,10 +107,6 @@ public final class StatusManager {
             test = true;
             removed = tasks.remove(key);
         }
-
-
-        if (removed instanceof Stoppable)
-            ((Stoppable) removed).stop();
 
         if (!test)
             throw new ResourceNotFound(key.toString());

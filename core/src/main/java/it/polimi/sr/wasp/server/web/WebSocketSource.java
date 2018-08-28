@@ -2,7 +2,6 @@ package it.polimi.sr.wasp.server.web;
 
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Source;
-import it.polimi.sr.wasp.server.model.concept.Stoppable;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -17,7 +16,7 @@ import java.net.URI;
 @Log4j2
 @WebSocket
 
-public class WebSocketSource implements Source, Stoppable {
+public class WebSocketSource implements Source {
 
     private Channel channel;
     private URI source;
@@ -55,7 +54,7 @@ public class WebSocketSource implements Source, Stoppable {
     //TODO this is the method that represents yield
     public void message(Session session, String message) throws IOException {
         log.debug(message);
-        channel.await(this, message);
+        channel.yield(message);
     }
 
     @Override
@@ -75,10 +74,6 @@ public class WebSocketSource implements Source, Stoppable {
         }
     }
 
-    @Override
-    public void yeild(String task) {
-        channel.await(this, task);
-    }
 
     @Override
     public String toString() {

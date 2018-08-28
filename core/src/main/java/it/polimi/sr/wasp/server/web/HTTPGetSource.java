@@ -2,7 +2,6 @@ package it.polimi.sr.wasp.server.web;
 
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Source;
-import it.polimi.sr.wasp.server.model.concept.Stoppable;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -11,7 +10,7 @@ import okhttp3.Response;
 import java.io.IOException;
 
 @Log4j2
-public class HTTPGetSource implements Source, Stoppable {
+public class HTTPGetSource implements Source {
 
     private final long poll;
     private Channel channel;
@@ -38,7 +37,7 @@ public class HTTPGetSource implements Source, Stoppable {
                             .build();
 
                     Response response = client.newCall(request).execute();
-                    yeild(response.body().string());
+                    channel.yield(response.body().string());
                     Thread.sleep(this.poll);
 
                 } catch (IOException | InterruptedException e) {
@@ -60,11 +59,6 @@ public class HTTPGetSource implements Source, Stoppable {
     @Override
     public void stop() {
         this.stop = true;
-    }
-
-    @Override
-    public void yeild(String task) {
-        channel.await(this, task);
     }
 
     @Override

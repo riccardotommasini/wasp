@@ -1,10 +1,11 @@
 package it.polimi.sr.wasp.server.model.concept;
 
-public interface Sink {
+import it.polimi.sr.wasp.server.model.concept.calls.AsynchCallee;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
 
-    void await(Source s, String m);
+public interface Sink extends AsynchCallee {
 
-    void await(Channel c, String m);
+    void yield(String m);
 
     Descriptor describe();
 

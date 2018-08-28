@@ -56,6 +56,12 @@ public class StatusManagerTest {
 
 
     private class TestTask implements Task {
+
+        @Override
+        public String iri() {
+            return null;
+        }
+
         @Override
         public Channel out() {
             return null;

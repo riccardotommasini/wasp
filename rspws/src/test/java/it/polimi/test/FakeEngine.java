@@ -4,7 +4,7 @@ import it.polimi.deib.rsp.vocals.rdf4j.VocalsFactoryRDF4J;
 import it.polimi.sr.wasp.rsp.RSPEngine;
 import it.polimi.sr.wasp.rsp.RSPServer;
 import it.polimi.sr.wasp.rsp.model.DataStream;
-import it.polimi.sr.wasp.rsp.model.Query;
+import it.polimi.sr.wasp.rsp.model.ObservableTask;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import lombok.extern.java.Log;
@@ -24,7 +24,7 @@ public class FakeEngine extends RSPEngine {
     }
 
     @Override
-    protected Query handleInternalQuery(String queryUri, String body, String uri, String source) {
+    protected ObservableTask handleInternalQuery(String queryUri, String body, String uri, String source) {
         return new FakeQuery(queryUri, body, uri, source);
     }
 
@@ -36,6 +36,7 @@ public class FakeEngine extends RSPEngine {
 
     @Log
     private static class Main extends RSPServer {
+
         public Main() throws IOException {
             super(new VocalsFactoryRDF4J());
         }
@@ -48,9 +49,9 @@ public class FakeEngine extends RSPEngine {
         }
     }
 
-    private class FakeQuery extends Query {
+    private class FakeQuery extends ObservableTask {
         public FakeQuery(String queryUri, String body, String uri, String source) {
-            super(queryUri, body);
+            super(queryUri, body, FakeEngine.this.base);
             this.out = new DataStream(base, uri, source);
         }
     }

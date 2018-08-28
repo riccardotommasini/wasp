@@ -5,14 +5,14 @@ import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.rsp.vocals.core.annotations.features.Feature;
 import it.polimi.rsp.vocals.core.annotations.features.Param;
 import it.polimi.rsp.vocals.core.annotations.features.RSPService;
+import it.polimi.sr.wasp.rsp.model.ObservableTask;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
-import it.polimi.sr.wasp.rsp.model.Query;
 
 @Feature(name = "QueryRegistrationFeature")
 public interface QueryRegistrationFeature {
 
     @RSPService(endpoint = "/queries", method = HttpMethod.POST)
-    Query register_query(@Param(name = "body") QueryBody body);
+    ObservableTask register_query(@Param(name = "body") QueryBody body);
 
 }
 

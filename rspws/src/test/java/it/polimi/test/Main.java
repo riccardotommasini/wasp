@@ -26,7 +26,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        InputStream inputStream = new FileInputStream("/Users/riccardo/_Projects/RSP/wasp/rspws/src/test/resources/sgraph.ttl");
+        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("sgraph.ttl");
 
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
 
@@ -34,7 +34,6 @@ public class Main {
         rdfParser.setRDFHandler(new StatementCollector(model));
 
         rdfParser.parse(inputStream, "http://www.example.org/vocals/examples#");
-
 
         Spark.port(4040);
         get("sgraph", (request, response) -> {

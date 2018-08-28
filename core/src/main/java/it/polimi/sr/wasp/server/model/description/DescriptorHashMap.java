@@ -1,4 +1,4 @@
-package it.polimi.sr.wasp.server.model.concept;
+package it.polimi.sr.wasp.server.model.description;
 
 import java.util.LinkedHashMap;
 

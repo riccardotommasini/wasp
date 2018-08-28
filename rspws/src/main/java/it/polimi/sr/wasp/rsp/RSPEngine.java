@@ -12,7 +12,7 @@ import it.polimi.sr.wasp.rsp.features.streams.StreamGetterFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamRegistrationFeature;
 import it.polimi.sr.wasp.rsp.features.streams.StreamsGetterFeature;
 import it.polimi.sr.wasp.rsp.model.DataStream;
-import it.polimi.sr.wasp.rsp.model.Query;
+import it.polimi.sr.wasp.rsp.model.ObservableTask;
 import it.polimi.sr.wasp.rsp.model.QueryBody;
 import it.polimi.sr.wasp.server.exceptions.DuplicateException;
 import it.polimi.sr.wasp.server.exceptions.ResourceNotFound;
@@ -48,7 +48,7 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     }
 
     @Override
-    public Query register_query(QueryBody body) {
+    public ObservableTask register_query(QueryBody body) {
         try {
 
             List<Channel> streams = new ArrayList<>();
@@ -64,20 +64,19 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
 
             Key k = createQueryKey(body.out);
 
-            Query query = handleInternalQuery(getQueryUri(body.out), body.body, getStreamUri(body.out), body.out);
+            ObservableTask query = handleInternalQuery(getQueryUri(body.out), body.body, getStreamUri(body.out), body.out);
 
             for (Channel channel : streams) {
                 channel.apply(query);
                 query.add(channel);
             }
 
-
             Channel out = query.out();
 
             StatusManager.commit(KeyFactory.create(k), out);
 
             //Create the query and commit it as add
-            return (Query) StatusManager.commit(k, query);
+            return (ObservableTask) StatusManager.commit(k, query);
 
         } catch (DuplicateException e) {
             throw new ServiceException(e);
@@ -87,15 +86,15 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     protected abstract String[] extractStreams(QueryBody body);
 
     @Override
-    public List<Query> get_queries() {
+    public List<ObservableTask> get_queries() {
         return StatusManager.tasks.values().stream()
-                .filter(task -> task instanceof Query)
-                .map(Query.class::cast).collect(Collectors.toList());
+                .filter(task -> task instanceof ObservableTask)
+                .map(ObservableTask.class::cast).collect(Collectors.toList());
     }
 
     @Override
-    public Query get_query(String id) {
-        return (Query) StatusManager.getTask(getQueryKey(id))
+    public ObservableTask get_query(String id) {
+        return (ObservableTask) StatusManager.getTask(getQueryKey(id))
                 .orElseThrow(() -> new ServiceException(new ResourceNotFound(id)));
     }
 
@@ -170,9 +169,9 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
     }
 
     @Override
-    public Query delete_query(String id) {
+    public ObservableTask delete_query(String id) {
         Key streamKey = getQueryKey(id);
-        return deleteResource(id, streamKey, StatusManager.getTask(streamKey), Query.class);
+        return deleteResource(id, streamKey, StatusManager.getTask(streamKey), ObservableTask.class);
 
     }
 
@@ -196,7 +195,7 @@ public abstract class RSPEngine implements QueryRegistrationFeature, QueryDeleti
         ).map(c::cast).orElseThrow(() -> new ServiceException(new ResourceNotFound(id)));
     }
 
-    protected abstract Query handleInternalQuery(String queryUri, String body, String stream_uri, String stream_source);
+    protected abstract ObservableTask handleInternalQuery(String queryUri, String body, String stream_uri, String stream_source);
 
     protected abstract Channel handleInternalStream(String id, String body);
 

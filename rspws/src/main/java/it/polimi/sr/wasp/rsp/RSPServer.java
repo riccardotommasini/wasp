@@ -26,7 +26,7 @@ public abstract class RSPServer extends Server {
     }
 
     @Override
-    protected void ingnite(String host, String name, int port) {
+    protected void ignite(String host, String name, int port) {
         port(port);
         path(name, () -> new ESDRequestHandler(stub).call());
         path(name, () -> new ObserversHandler().call());

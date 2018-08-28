@@ -1,6 +1,10 @@
 package it.polimi.sr.wasp.server.web;
 
-import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.Channel;
+import it.polimi.sr.wasp.server.model.concept.Sink;
+import it.polimi.sr.wasp.server.model.concept.Source;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -38,29 +42,6 @@ public class HTTPPostSink implements Sink {
     }
 
     @Override
-    public void await(Source s, String m) {
-        try {
-            callback(m);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
-    public void await(Channel c, String m) {
-        try {
-            callback(m);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public Descriptor describe() {
         return new DescriptorHashMap() {
             {
@@ -71,5 +52,15 @@ public class HTTPPostSink implements Sink {
         };
     }
 
+    @Override
+    public void yield(String m) {
+        try {
+            callback(m);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

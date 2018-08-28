@@ -4,8 +4,7 @@ import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import it.polimi.sr.wasp.server.model.concept.Channel;
-import it.polimi.sr.wasp.server.model.concept.DescriptorHashMap;
-import it.polimi.sr.wasp.server.model.concept.Named;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.server.model.concept.Task;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.AllArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.*;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Query extends Observable implements Task, Named {
+public class ObservableTask extends Observable implements Task {
 
     public final String id;
     public final String body;
@@ -24,7 +23,6 @@ public class Query extends Observable implements Task, Named {
 
     protected Channel out;
     protected List<Channel> in = new ArrayList<>();
-
 
     @Override
     public Channel out() {

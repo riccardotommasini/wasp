@@ -8,8 +8,8 @@
     <artifactId>wasp</artifactId>
     <version>1.0</version>
     <modules>
-        <module>rspws</module>
         <module>core</module>
+        <module>rspws</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -27,6 +27,12 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
@@ -71,8 +77,13 @@
             <artifactId>lombok</artifactId>
             <version>1.16.20</version>
         </dependency>
+        <!--<dependency>-->
+        <!--<groupId>it.deib.rsp.vocals</groupId>-->
+        <!--<artifactId>vocals-core</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>it.deib.rsp.vocals</groupId>
+            <groupId>com.github.riccardotommasini.vocals4j</groupId>
             <artifactId>vocals-core</artifactId>
             <version>1.0</version>
         </dependency>
@@ -92,16 +103,6 @@
                 <version>2.7.2</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore</artifactId>
-                <version>4.4.9</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.8.0</version>
-            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
@@ -123,7 +124,7 @@
                 <version>1.16.20</version>
             </dependency>
             <dependency>
-                <groupId>it.deib.rsp.vocals</groupId>
+                <groupId>com.github.riccardotommasini.vocals4j</groupId>
                 <artifactId>vocals-core</artifactId>
                 <version>1.0</version>
             </dependency>

@@ -22,7 +22,7 @@ public abstract class Server {
     }
 
     protected void init(Object engine, String host, int port, String name, List<Endpoint> endpoints) {
-        ingnite(host, name, port);
+        ignite(host, name, port);
         endpoints.forEach(endpoint -> RequestHandlerFactory.getServices(engine, endpoint)
                 .ifPresent(handler -> path(name, handler::call)));
         // endpoints.stream().filter(endpoint -> HttpMethod.GET.equals(endpoint.method)).forEach(endpoint -> RequestHandlerFactory.getGetters(engine, endpoint)
@@ -31,7 +31,7 @@ public abstract class Server {
         //      .ifPresent(handler -> path(name, handler::call)));
     }
 
-    protected abstract void ingnite(String host, String path, int port);
+    protected abstract void ignite(String host, String path, int port);
 
 
 }

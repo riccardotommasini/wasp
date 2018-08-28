@@ -4,6 +4,6 @@ public interface Source {
 
     Channel add(Channel t);
 
-    void yeild(String task);
+    void stop();
 
 }

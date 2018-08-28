@@ -1,10 +1,12 @@
 package it.polimi.sr.wasp.server.model.concept;
 
-public interface Channel extends Named {
+import it.polimi.sr.wasp.server.model.concept.calls.AsynchCallee;
+import it.polimi.sr.wasp.server.model.concept.calls.Callee;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
 
-    void yeild(String m);
+public interface Channel extends AsynchCallee, Callee {
 
-    void await(Source s, String m);
+    String iri();
 
     void add(Sink s);
 

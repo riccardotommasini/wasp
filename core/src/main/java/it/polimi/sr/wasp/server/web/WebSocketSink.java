@@ -3,6 +3,8 @@ package it.polimi.sr.wasp.server.web;
 import com.google.gson.Gson;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
 import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.eclipse.jetty.websocket.api.Session;
@@ -64,12 +66,7 @@ public class WebSocketSink implements Sink, RequestHandler {
     }
 
     @Override
-    public void await(Source s, String m) {
-        broadcast(m);
-    }
-
-    @Override
-    public void await(Channel c, String m) {
+    public void yield(String m) {
         broadcast(m);
     }
 

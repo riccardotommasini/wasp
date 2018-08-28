@@ -3,7 +3,9 @@ package it.polimi.sr.wasp.server.web;
 import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.rsp.vocals.core.annotations.HttpMethod;
 import it.polimi.sr.wasp.server.handlers.AbstractReflectiveRequestHandler;
-import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.Sink;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.extern.java.Log;
 import org.apache.http.entity.ContentType;
@@ -46,17 +48,11 @@ public class HttpGetSink extends AbstractReflectiveRequestHandler implements Sin
     }
 
     @Override
-    public void await(Source s, String m) {
-        //TODO new window blank node         this.pastWindows=pastWindows;
-
-        this.message = m;
-    }
-
-    @Override
-    public void await(Channel c, String m) {
+    public void yield(String m) {
         //TODO new window blank node
         this.message = m;
     }
+
 
     @Override
     public Descriptor describe() {

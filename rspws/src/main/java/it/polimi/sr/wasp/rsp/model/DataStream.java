@@ -4,6 +4,9 @@ import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import it.polimi.sr.wasp.server.model.concept.*;
+import it.polimi.sr.wasp.server.model.concept.calls.Caller;
+import it.polimi.sr.wasp.server.model.description.Descriptor;
+import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
 import lombok.extern.log4j.Log4j2;
 
@@ -11,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Log4j2
-public class DataStream implements Channel, Named {
+public class DataStream implements Channel {
 
     public String id;
     public String source;
@@ -96,16 +99,15 @@ public class DataStream implements Channel, Named {
 
 
     @Override
-    public void yeild(String task) {
+    public void yield(String task) {
         log.debug(" Yield message " + task);
-
-        sinks.forEach(sink -> sink.await(this, task));
+        sinks.forEach(sink -> sink.yield(task));
     }
 
     @Override
-    public void await(Source s, String m) {
+    public void await(Caller s, String m) {
         log.debug(id + " got a message " + m + "from " + s);
-        yeild(m);
+        yield(m);
     }
 
     @Override
@@ -171,4 +173,5 @@ public class DataStream implements Channel, Named {
     public String iri() {
         return id;
     }
+
 }
