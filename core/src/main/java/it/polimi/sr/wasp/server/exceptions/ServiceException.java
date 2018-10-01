@@ -6,6 +6,11 @@ public class ServiceException extends RuntimeException {
         super(cause.getMessage(), cause);
     }
 
+    public ServiceException(String msg) {
+        super(msg);
+    }
+
+
     @Override
     public String toString() {
         return getMessage();
