@@ -1,5 +1,6 @@
 package it.polimi.sr.wasp.server.web;
 
+import it.polimi.sr.wasp.VOCABS;
 import it.polimi.sr.wasp.server.model.concept.Sink;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
@@ -7,6 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Log4j2
 public class HTTPPostSink implements Sink {
@@ -38,11 +41,21 @@ public class HTTPPostSink implements Sink {
 
     @Override
     public Descriptor describe() {
+        LinkedHashMap<String, Object> context = new LinkedHashMap<>();
+        context.put(VOCABS.DCAT.prefix, VOCABS.DCAT.uri);
+        context.put(VOCABS.VOCALS.prefix, VOCABS.VOCALS.uri);
+
         return new DescriptorHashMap() {
             {
                 put("@type", "vocals:StreamEndpoint");
                 put("dcat:accessURL", "http://");
                 //TODO
+            }
+
+            @Override
+            public Map<String, Object> context() {
+
+                return context;
             }
         };
     }
@@ -52,9 +65,7 @@ public class HTTPPostSink implements Sink {
     public void await(String m) {
         try {
             response(m).message();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

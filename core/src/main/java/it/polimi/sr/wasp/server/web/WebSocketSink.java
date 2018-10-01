@@ -1,6 +1,7 @@
 package it.polimi.sr.wasp.server.web;
 
 import com.google.gson.Gson;
+import it.polimi.sr.wasp.VOCABS;
 import it.polimi.sr.wasp.server.handlers.RequestHandler;
 import it.polimi.sr.wasp.server.model.concept.Sink;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
@@ -18,6 +19,8 @@ import spark.Service;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Log
@@ -67,7 +70,18 @@ public class WebSocketSink implements Sink, RequestHandler {
 
     @Override
     public Descriptor describe() {
+
+        LinkedHashMap<String, Object> context = new LinkedHashMap<>();
+        context.put(VOCABS.DCAT.prefix, VOCABS.DCAT.uri);
+        context.put(VOCABS.VOCALS.prefix, VOCABS.VOCALS.uri);
+        context.put(VOCABS.VSD.prefix, VOCABS.VSD.uri);
+
         return new DescriptorHashMap() {
+            @Override
+            public Map<String, Object> context() {
+                return context;
+            }
+
             {
                 put("@type", "vocals:StreamEndpoint");
                 put("dcat:accessURL", "ws://" + ip + ":" + port + http.getPaths() + url);
