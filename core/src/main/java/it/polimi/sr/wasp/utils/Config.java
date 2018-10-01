@@ -84,11 +84,7 @@ public class Config {
     }
 
     public String getHostName() {
-        String hostName = config.getString(HOST);
-        if (!config.getString(HOST).endsWith("/")) {
-            hostName = hostName + "/";
-        }
-        return hostName;
+        return config.getString(HOST);
     }
 
     public boolean getEnableTSFunction() {

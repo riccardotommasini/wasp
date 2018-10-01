@@ -32,4 +32,12 @@ public class URIUtils {
     public static boolean isUri(String id) {
         return id.contains("http://") || id.contains("https://");
     }
+
+    public static String getQueryUri(String base, String id) {
+        return base + URIUtils.SLASH + "queries" + URIUtils.SLASH + id;
+    }
+
+    public static String getStreamUri(String base, String id) {
+        return base + URIUtils.SLASH + "streams" + URIUtils.SLASH + id;
+    }
 }
