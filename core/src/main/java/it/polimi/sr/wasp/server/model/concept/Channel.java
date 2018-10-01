@@ -5,12 +5,11 @@ import it.polimi.sr.wasp.server.model.concept.tasks.SynchTask;
 import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 
-//Synchronous Sink
 public interface Channel {
 
     String iri();
 
-    Channel put(String m);
+    Channel put(Object m);
 
     Channel add(Sink s);
 
