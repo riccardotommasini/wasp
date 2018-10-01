@@ -1,6 +1,5 @@
 package it.polimi.sr.wasp.server.model.persist;
 
-import it.polimi.sr.wasp.server.model.concept.Channel;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.security.KeyException;
@@ -28,6 +27,10 @@ public class KeyFactory {
         return keys.get(o);
     }
 
+    public static boolean exists(Object o) {
+        return keys.containsKey(o);
+    }
+
     public static Key create(String o) {
         return keys.computeIfAbsent(o, a -> new KeyImpl(o));
     }
@@ -35,10 +38,6 @@ public class KeyFactory {
     public static Key create(Key o) {
         o.hlplus();
         return create(o, Key.class);
-    }
-
-    public static Key create(Channel o) {
-        return create(o.iri());
     }
 
     public static Key create(Object o, Class<?> c) {
