@@ -1,5 +1,6 @@
-package it.polimi.sr.wasp.rsp;
+package it.polimi.sr.wasp.utils;
 
+import it.polimi.sr.wasp.rsp.QueryType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

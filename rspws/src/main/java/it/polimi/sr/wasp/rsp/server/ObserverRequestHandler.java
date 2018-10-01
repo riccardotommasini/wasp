@@ -1,6 +1,7 @@
 package it.polimi.sr.wasp.rsp.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.polimi.rsp.vocals.core.annotations.Endpoint;
 import it.polimi.rsp.vocals.core.annotations.HttpMethod;
@@ -42,15 +43,18 @@ public class ObserverRequestHandler implements RequestHandler {
 
     private static final Gson gson = new Gson();
     private static final int HTTP_BAD_REQUEST = 400;
-    private static final Endpoint endpoint = new Endpoint("observers", "/observers/:stream", HttpMethod.POST, "observers", new Endpoint.Par[]{
-            new Endpoint.Par("stream", 0, true, String.class),
-            new Endpoint.Par("protocol", 1, false, Protocols.class)
-    });
+    private static final Endpoint endpoint = new Endpoint("observers", "/observers/:stream", HttpMethod.POST, "observers",
+            new Endpoint.Par[]{
+                    new Endpoint.Par("stream", 0, true, String.class),
+                    new Endpoint.Par("protocol", 1, false, Protocols.class),
+                    new Endpoint.Par("retention", 2, false, Integer.class)
+            });
 
     private final String host;
     private final int port;
     private final String base_ws;
     private final String base_query;
+    private final String base;
     private int wsport;
     private String name;
     private String base_stream;
@@ -60,9 +64,9 @@ public class ObserverRequestHandler implements RequestHandler {
         this.host = StringUtils.removeLeadingAndTrailingSlashesFrom(host);
         this.port = port;
         this.wsport = port;
-        String s = this.host + URIUtils.COLON + this.port + URIUtils.SLASH + this.name + URIUtils.SLASH;
-        base_stream = s + "streams" + URIUtils.SLASH;
-        base_query = s + "queries" + URIUtils.SLASH;
+        this.base = this.host + URIUtils.COLON + this.port + URIUtils.SLASH + this.name + URIUtils.SLASH;
+        base_stream = this.base + "streams" + URIUtils.SLASH;
+        base_query = this.base + "queries" + URIUtils.SLASH;
         base_ws = URIUtils.SLASH + this.name + URIUtils.SLASH + "streams" + URIUtils.SLASH;
     }
 
@@ -77,64 +81,79 @@ public class ObserverRequestHandler implements RequestHandler {
         final String stream = request.params(endpoint.params[0].name);
         JsonObject jsonObject = gson.fromJson(request.body(), JsonObject.class);
         Protocols protocol = Protocols.valueOf(jsonObject.get(endpoint.params[1].name).getAsString().toUpperCase(Locale.ENGLISH));
+        JsonElement jsonElement = jsonObject.get(endpoint.params[2].name);
+        int retention = jsonElement != null ? jsonElement.getAsInt() : 1;
         String surl = base_stream + stream;
         String qurl = base_query + stream;
 
-        Key k1 = KeyFactory.get2("http://" + qurl);
-        Key k2 = KeyFactory.get("http://" + surl);
+        Key k = KeyFactory.get("http://" + surl);
+        Key k2 = KeyFactory.get2("http://" + qurl);
         String path = base_ws + stream + "/observers/";
 
 
-        return StatusManager.getChannel(k1).map(s ->
-                getAnswer(stream, protocol, k1, s, path))
+        return StatusManager.getChannel(k2).map(s ->
+                getAnswer(stream, protocol, k2, s, path, retention))
                 .map(Optional::of)
-                .orElse(StatusManager.getChannel(k2)
-                        .map(s -> getAnswer(stream, protocol, k2, s, path)))
+                .orElse(StatusManager.getChannel(k)
+                        .map(s -> getAnswer(stream, protocol, k, s, path, retention)))
                 .orElse(new Answer(HTTP_BAD_REQUEST, "Observer NOT Successfully Created"));
 
     }
 
-    private Answer getAnswer(String stream, Protocols protocol, Key k, Channel s, String path) {
+    private Answer getAnswer(String stream, Protocols protocol, Key k, Channel channel, String path, int retention) {
         try {
-            Sink observer = null;
-            String path1 = path + Math.abs(k.hashCode());
+            Sink observer;
+
+            Key key = getKey(k);
+
+            String oid = path + Math.abs(key.hashCode());
             switch (protocol) {
                 case EVENTS:
                     observer = getEventsSink(path);
                     break;
                 case HTTP:
-                    observer = startHttpSink(stream, path1, this.wsport = wsport + 1);
+                    observer = startHttpSink(stream, oid, retention, this.wsport += 1);
                     break;
                 case WEBSOCKET:
                 default:
-                    observer = startWebSocket(path1, this.wsport = wsport + 1);
+                    observer = startWebSocket(oid, this.wsport += 1);
                     break;
 
             }
-            s.add(observer);
-            StatusManager.commit(KeyFactory.create(k), observer);
-            return new Answer(200, s);
+
+            channel.add(observer);
+
+            StatusManager.commit(key, observer);
+
+            return new Answer(200, channel);
         } catch (DuplicateException e) {
-            e.printStackTrace();
             return new Answer(409, "Duplicate Resource " + stream);
         }
     }
 
-    private Sink getEventsSink(String path) {
-        return new HTTPPostSink(path);
+    private Key getKey(Key k) throws DuplicateException {
+        Key key = KeyFactory.create(k);
+        if (StatusManager.exists(key)) {
+            return getKey(key);
+        }
+        return key;
     }
 
-    private Sink startHttpSink(String stream, String path, int port) {
-        Service ws = Service.ignite().port(port).threadPool(4);
-        final HttpGetSink httpGetSink = new HttpGetSink(stream, path, 3, ws);
-        ws.path(this.name, httpGetSink::call);
+    private Sink getEventsSink(String oid) {
+        return new HTTPPostSink(oid);
+    }
+
+    private Sink startHttpSink(String stream, String oid, int retention, int port) {
+        Service http = Service.ignite().port(port).threadPool(4);
+        final HttpGetSink httpGetSink = new HttpGetSink("http://" + this.host + URIUtils.COLON + port, stream, oid, retention, http);
+        http.path("", httpGetSink::call);
         return httpGetSink;
     }
 
-    private Sink startWebSocket(String path, int p) {
+    private Sink startWebSocket(String oid, int p) {
         log.info("New Service Instance opened on port [" + p + "]");
         Service ws = Service.ignite().port(p).threadPool(4);
-        WebSocketSink observer = new WebSocketSink(path, ws, "localhost", p, "http://" + host + ":" + port + "/" + name);
+        WebSocketSink observer = new WebSocketSink(oid, ws, host, p, "http://" + host + ":" + port + "/" + name);
         ws.path(name, observer::call);
         return observer;
     }

@@ -76,7 +76,7 @@ public abstract class InternalTaskWrapper implements Task {
         context.put("vsd", "http://w3id.org/rsp/vocals-sd#");
         context.put("xsd", "http://www.w3.org/2001/XMLSchema#");
         context.put("format", "http://www.w3.org/ns/formats/");
-        context.put("dcat", "https://www.w3.org/TR/vocab-dcat/");
+        context.put("dcat", "http://www.w3.org/ns/dcat#");
         context.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
         context.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
         context.put("prov", "http://www.w3.org/ns/prov#");
@@ -85,13 +85,27 @@ public abstract class InternalTaskWrapper implements Task {
 
         task.put("@id", iri());
         task.put("@type", "vprov:Task");
-        task.put("prov:generated", new DescriptorHashMap() {{
-            put("@id", out.iri());
-        }});
+        task.put("prov:generated", new DescriptorHashMap() {
+            @Override
+            public Map<String, Object> context() {
+                return context;
+            }
 
-        in.forEach(i -> task.put("prov:uses", new DescriptorHashMap() {{
-            put("@id", i.iri());
-        }}));
+            {
+                put("@id", out.iri());
+            }
+        });
+
+        in.forEach(i -> task.put("prov:uses", new DescriptorHashMap() {
+            @Override
+            public Map<String, Object> context() {
+                return context;
+            }
+
+            {
+                put("@id", i.iri());
+            }
+        }));
 
         String s = JsonUtils.toPrettyString(JsonLdProcessor.compact(task, context, options));
         return s;

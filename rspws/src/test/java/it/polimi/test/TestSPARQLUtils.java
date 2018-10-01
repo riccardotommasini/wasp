@@ -1,6 +1,6 @@
 package it.polimi.test;
 
-import it.polimi.sr.wasp.rsp.SPARQLUtils;
+import it.polimi.sr.wasp.utils.SPARQLUtils;
 import org.junit.Test;
 
 import java.util.List;

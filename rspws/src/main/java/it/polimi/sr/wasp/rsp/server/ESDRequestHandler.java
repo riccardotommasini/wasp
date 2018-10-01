@@ -17,17 +17,19 @@ import static spark.Spark.get;
 @Log
 public class ESDRequestHandler extends AbstractReflectiveRequestHandler {
 
+    private final String name;
     private VocalsStub model;
 
-    public ESDRequestHandler(VocalsStub m) {
+    public ESDRequestHandler(VocalsStub m, String name) {
         super(null, new Endpoint("esd", "", HttpMethod.GET, "esd", new Endpoint.Par[]{}));
+        this.name = name;
         this.model = m;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type(ContentType.APPLICATION_JSON.getMimeType());
-        return getDescription(model);
+        return getDescription(model).replace("localhost", name);
     }
 
     @Override

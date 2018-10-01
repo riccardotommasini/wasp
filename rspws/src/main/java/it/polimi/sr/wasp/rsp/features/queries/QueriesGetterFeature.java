@@ -11,6 +11,6 @@ import java.util.List;
 public interface QueriesGetterFeature {
 
     @RSPService(endpoint = "/queries")
-    List<InternalTaskWrapper> get_queries();
+    List<String> get_queries();
 
 }

@@ -1,0 +1,34 @@
+BASE  <http://localhost:4000/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX frmt: <http://www.w3.org/ns/formats/>
+PREFIX vocals: <http://w3id.org/rsp/vocals#>
+PREFIX vsd: <http://w3id.org/rsp/vocals-sd#>
+REGISTER STREAM :stream1
+FROM SOURCE <ws://sdasd.org>
+WHERE {
+
+           {this} a vocals:StreamDescriptor .
+
+           {publisher} a vsd:PublishingService ;
+                         vsd:hasFeature vsd:replaying ;
+                         vsd:resultFormat frmt:JSON-LD .
+
+           :ColorEndpoint a vocals:StreamEndpoint ;
+                            dcat:title "A Color Stream Endpoint"^^xsd:string ;
+                            dcat:description "Streaming endpoint to consume Colors via WebSocket"^^xsd:string ;
+                            dcat:license <https://creativecommons.org/licenses/by-nc/4.0/> ;
+                            dcat:format frmt:JSON-LD ;
+                            dcat:accessURL {source} ;
+                            vsd:publishedBy {publisher} .
+
+           {stream} a vocals:RDFStream ;
+	                dcat:title "Milan Traffic Stream"^^xsd:string ;
+                    dcat:description "Aggregated stream of different streams produced by traffic sensors spread around Milan"^^xsd:string ;
+                    dcat:publisher {publisher} ;
+                    dcat:landingPage <https://example.org/rw/colors/> ;
+                    vocals:hasEndpoint :ColorEndpoint  .
+
+}
+

@@ -3,6 +3,7 @@ package it.polimi.sr.wasp.rsp.model;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
+import it.polimi.sr.wasp.VOCABS;
 import it.polimi.sr.wasp.server.model.concept.Channel;
 import it.polimi.sr.wasp.server.model.concept.Sink;
 import it.polimi.sr.wasp.server.model.concept.tasks.AsynchTask;
@@ -28,10 +29,10 @@ public class StatelessDataChannel implements Channel {
     protected List<SynchTask> asynch_task = new ArrayList<>();
     protected List<Task> tasks = new ArrayList<>();
 
-    public StatelessDataChannel(String base, String id, String uri) {
-        this.id = id;
-        this.source = uri;
+    public StatelessDataChannel(String base, String id, String source) {
         this.base = base;
+        this.id = id;
+        this.source = source;
     }
 
     @Override
@@ -39,70 +40,22 @@ public class StatelessDataChannel implements Channel {
         try {
             return getJson();
         } catch (IOException e) {
-            return "\"@context\": {\n" +
-                    "    \"@base\":\"http://localhost:8181/csparql\",\n" +
-                    "    \"vocals\": \"http://w3id.org/rsp/vocals#\",\n" +
-                    "    \"vprov\": \"http://w3id.org/rsp/vocals-prov#\",\n" +
-                    "    \"vsd\": \"http://w3id.org/rsp/vocals-sd#\",\n" +
-                    "    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n" +
-                    "    \"dcat\":\"\"\n" +
-                    "  },\n" +
-                    "  \n" +
-                    "  \"@id\": \"" + iri() + "\",\n" +
-                    "  \"@type\":\"vocals:RDFStream\",\n" +
-                    "  \"dcat:title\": \"" + iri() + "\",\n" +
-                    "  \"vocals:hasEndpoint\": {\n" +
-                    "    \"@type\": \"vocals:StreamEndpoint\",\n" +
-                    "    \"dcat:accessURL\": \"ws://example.org/traffic/milan\"\n" +
-                    "  }";
+            return "Error";
         }
 
     }
 
     private String getJson() throws IOException {
-        JsonLdOptions options = new JsonLdOptions();
-        Map<String, Object> context = new HashMap<>();
-        context.put("@base", base + URIUtils.SLASH);
-        context.put("vocals", "http://w3id.org/rsp/vocals#");
-        context.put("vprov", "http://w3id.org/rsp/vocals-prov#");
-        context.put("vsd", "http://w3id.org/rsp/vocals-sd#");
-        context.put("xsd", "http://www.w3.org/2001/XMLSchema#");
-        context.put("format", "http://www.w3.org/ns/formats/");
-        context.put("dcat", "https://www.w3.org/TR/vocab-dcat/");
-        context.put("dcat:accessURL", new LinkedHashMap<String, Object>() {
-            {
-                put("@type", "xsd:string");
-            }
-        });
-
-        Map<String, Object> descriptor = new HashMap<>();
-        Map<String, Object> stream = new HashMap<>();
-        stream.put("@id", iri());
-        stream.put("@type", "vocals:RDFStream");
-        descriptor.put("@type", "vocals:StreamDescriptor");
-        descriptor.put("dcat:dataset", stream);
-
-        if (source.contains("ws://")) {
-            stream.put("vocals:hasEndpoint", new DescriptorHashMap() {
-                {
-                    put("@type", "vocals:StreamEndpoint");
-                    put("dcat:accessURL", source);
-                    put("dcat:format", "frmt:JSON-LD");
-                    put("vsd:publishedBy", base);
-                }
-            });
-        }
-
-        sinks.stream().
-                filter(sink -> !sink.describe().empty()).
-                forEach(sink -> stream.put("vocals:hasEndpoint", sink.describe()));
-
-        String s = JsonUtils.toPrettyString(JsonLdProcessor.compact(descriptor, context, options));
-        return s;
+        Descriptor describe = describe();
+        Map<String, Object> context = describe.context();
+        JsonLdOptions opts = new JsonLdOptions();
+        opts.setPruneBlankNodeIdentifiers(true);
+        return JsonUtils.toPrettyString(JsonLdProcessor.compact(describe, context, opts));
     }
 
     @Override
-    public Channel put(String message) {
+    public Channel put(Object o) {
+        String message = o.toString();
         log.debug(" Yield message " + message);
         synch_task.forEach(t -> t.yield(this, message));
         sinks.forEach(sink -> sink.await(message));
@@ -145,26 +98,27 @@ public class StatelessDataChannel implements Channel {
     @Override
     public Descriptor describe() {
 
-        Map<String, Object> context = new HashMap<>();
-        context.put("@base", base + URIUtils.SLASH);
-        context.put("vocals", "http://w3id.org/rsp/vocals#");
-        context.put("vprov", "http://w3id.org/rsp/vocals-prov#");
-        context.put("vsd", "http://w3id.org/rsp/vocals-sd#");
-        context.put("xsd", "http://www.w3.org/2001/XMLSchema#");
-        context.put("format", "http://www.w3.org/ns/formats/");
-        context.put("dcat", "https://www.w3.org/TR/vocab-dcat/");
-        context.put("dcat:accessURL", new LinkedHashMap<String, Object>() {
-            {
-                put("@type", "xsd:string");
-            }
-        });
-
         Map<String, Object> stream = new HashMap<>();
         stream.put("@id", iri());
         stream.put("@type", "vocals:RDFStream");
 
+        List<Descriptor> endpoints = new ArrayList<>();
+
         if (source.contains("ws://")) {
-            stream.put("vocals:hasEndpoint", new DescriptorHashMap() {
+            Map<String, Object> context = new HashMap<>();
+            endpoints.add(new DescriptorHashMap() {
+                @Override
+                public Map<String, Object> context() {
+                    context.put("@base", base + URIUtils.SLASH);
+                    context.put(VOCABS.VPROV.prefix, VOCABS.VPROV.uri);
+                    context.put(VOCABS.VSD.prefix, VOCABS.VSD.uri);
+                    context.put(VOCABS.FORMAT.prefix, VOCABS.FORMAT.uri);
+                    context.put(VOCABS.XSD.prefix, VOCABS.XSD.uri);
+                    context.put(VOCABS.DCAT.prefix, VOCABS.DCAT.uri);
+                    context.put(VOCABS.VOCALS.prefix, VOCABS.VOCALS.uri);
+                    return context;
+                }
+
                 {
                     put("@type", "vocals:StreamEndpoint");
                     put("dcat:accessURL", source);
@@ -176,12 +130,33 @@ public class StatelessDataChannel implements Channel {
 
         sinks.stream().
                 filter(sink -> !sink.describe().empty()).
-                forEach(sink -> stream.put("vocals:hasEndpoint", sink.describe()));
+                forEach(sink -> endpoints.add(sink.describe()));
 
-        return new DescriptorHashMap() {{
-            put("@type", "vocals:StreamDescriptor");
-            put("dcat:dataset", stream);
-        }};
+
+        if (endpoints.size() > 0) {
+            stream.put("vocals:hasEndpoint", endpoints.toArray(new Descriptor[endpoints.size()]));
+        }
+
+
+        return new DescriptorHashMap() {
+            @Override
+            public Map<String, Object> context() {
+                return new LinkedHashMap<String, Object>() {
+                    {
+                        put(VOCABS.DCAT.prefix, VOCABS.DCAT.uri);
+                        put(VOCABS.VOCALS.prefix, VOCABS.VOCALS.uri);
+                        endpoints.stream()
+                                .flatMap(descriptor -> descriptor.context().entrySet().stream())
+                                .forEach(e -> put(e.getKey(), e.getValue()));
+                    }
+                };
+            }
+
+            {
+                put("@type", "vocals:StreamDescriptor");
+                put("dcat:dataset", stream);
+            }
+        };
     }
 
     @Override
