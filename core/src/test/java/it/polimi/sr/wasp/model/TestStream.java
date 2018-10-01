@@ -65,7 +65,7 @@ public class TestStream extends Observable implements Channel {
 
 
     @Override
-    public Channel put(String m) {
+    public Channel put(Object m) {
         return this;
     }
 }
