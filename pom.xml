@@ -107,7 +107,7 @@
             <artifactId>jsonld-java</artifactId>
             <version>v0.12.2</version>
         </dependency>
-        </dependencies>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
@@ -147,6 +147,12 @@
                 <groupId>com.github.riccardotommasini.vocals4j</groupId>
                 <artifactId>vocals-core</artifactId>
                 <version>1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.eclipse.rdf4j</groupId>
+                        <artifactId>rdf4j-rio-jsonld</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.github.jsonld-java.jsonld-java</groupId>
