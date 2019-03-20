@@ -103,6 +103,11 @@
             <artifactId>vocals-core</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.jsonld-java</groupId>
+            <artifactId>jsonld-java</artifactId>
+            <version>0.12.3</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -143,6 +148,11 @@
                 <groupId>com.github.riccardotommasini.vocals4j</groupId>
                 <artifactId>vocals-core</artifactId>
                 <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>0.12.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
