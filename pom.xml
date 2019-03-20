@@ -49,7 +49,6 @@
         </repository>
     </repositories>
 
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
         <dependency>
@@ -104,11 +103,11 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jsonld-java</groupId>
+            <groupId>com.github.jsonld-java.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
-            <version>0.12.3</version>
+            <version>v0.12.2</version>
         </dependency>
-    </dependencies>
+        </dependencies>
 
     <dependencyManagement>
         <dependencies>
@@ -142,7 +141,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.20</version>
+                <version>1.18.6</version>
             </dependency>
             <dependency>
                 <groupId>com.github.riccardotommasini.vocals4j</groupId>
@@ -150,9 +149,9 @@
                 <version>1.0</version>
             </dependency>
             <dependency>
-                <groupId>com.github.jsonld-java</groupId>
+                <groupId>com.github.jsonld-java.jsonld-java</groupId>
                 <artifactId>jsonld-java</artifactId>
-                <version>0.12.3</version>
+                <version>v0.12.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
