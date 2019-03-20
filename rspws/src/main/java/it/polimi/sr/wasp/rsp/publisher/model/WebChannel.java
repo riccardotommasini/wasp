@@ -12,9 +12,7 @@ import it.polimi.sr.wasp.server.model.concept.tasks.Task;
 import it.polimi.sr.wasp.server.model.description.Descriptor;
 import it.polimi.sr.wasp.server.model.description.DescriptorHashMap;
 import it.polimi.sr.wasp.utils.URIUtils;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.rdf.api.Quad;
 
 import java.io.IOException;
 import java.util.*;

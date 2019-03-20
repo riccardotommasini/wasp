@@ -23,6 +23,7 @@ import org.parboiled.Parboiled;
 import org.parboiled.errors.ParseError;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
+import spark.utils.StringUtils;
 
 import java.security.KeyException;
 import java.util.Collection;
@@ -48,11 +49,16 @@ public abstract class RSPPublisher extends RSPActor implements StreamFullRegistr
 
         if (result.hasErrors()) {
             List<ParseError> parseErrors = result.parseErrors;
-            parseErrors.forEach(e -> System.out.println(
+            String reduce = parseErrors.stream().map(e ->
                     input.substring(0, e.getStartIndex()) + "|->" +
                             input.substring(e.getStartIndex(), e.getEndIndex()) + "<-|" +
                             input.substring(e.getEndIndex() + 1, input.length() - 1)
-            ));
+            ).reduce("", (s, s2) -> s + s2);
+
+            throw new ServiceException("{ " +
+                    "\"error\": \"parsing error\", " +
+                    "\"message\": \"" + StringUtils.removeLeadingAndTrailingSlashesFrom(reduce) +
+                    "\"}");
         }
 
         StreamPublicationBuilder.Built built = result.parseTreeRoot.getChildren().get(0).getValue().build();

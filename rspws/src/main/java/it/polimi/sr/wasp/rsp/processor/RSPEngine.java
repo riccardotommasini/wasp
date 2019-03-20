@@ -73,7 +73,6 @@ public abstract class RSPEngine extends RSPActor implements QueryRegistrationFea
             return (InternalTaskWrapper) StatusManager.commit(k, query);
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ServiceException(e);
         }
     }
