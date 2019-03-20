@@ -10,7 +10,6 @@ public class ServiceException extends RuntimeException {
         super(msg);
     }
 
-
     @Override
     public String toString() {
         return getMessage();

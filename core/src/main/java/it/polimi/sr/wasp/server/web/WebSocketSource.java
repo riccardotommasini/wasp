@@ -15,7 +15,6 @@ import java.net.URI;
 
 @Log4j2
 @WebSocket
-
 public class WebSocketSource implements Source {
 
     private Channel channel;

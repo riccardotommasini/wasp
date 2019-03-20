@@ -71,15 +71,20 @@ public abstract class AbstractReflectiveRequestHandler implements RequestHandler
             //TODO set up a return method that is actually meaningful
             Object invoke = method.invoke(engine, params);
             return new Answer(200, invoke);
-        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
-            Throwable cause = e.getCause().getCause();
-            if (cause instanceof DuplicateException)
-                return new Answer(409, cause.getMessage());
-            else if (cause instanceof ResourceNotFound || cause instanceof KeyException)
-                return new Answer(404, cause.getMessage());
-            else
-                return new Answer(HTTP_BAD_REQUEST, cause.getMessage());
+        } catch (IllegalAccessException  | IllegalArgumentException e) {
+            return prepareErroneousAnswer(e.getCause().getCause());
+        } catch (InvocationTargetException e) {
+            return prepareErroneousAnswer(e.getTargetException());
         }
+    }
+
+    private Answer prepareErroneousAnswer(Throwable cause) {
+        if (cause instanceof DuplicateException)
+            return new Answer(409, cause.getMessage());
+        else if (cause instanceof ResourceNotFound || cause instanceof KeyException)
+            return new Answer(404, cause.getMessage());
+        else
+            return new Answer(HTTP_BAD_REQUEST, cause.getMessage());
     }
 
 
